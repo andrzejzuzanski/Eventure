@@ -61,6 +61,9 @@ namespace Eventure.Controllers
 
                 _context.Add(newEvent);
                 await _context.SaveChangesAsync();
+
+                TempData["Message"] = "Wydarzenie zostało utworzone.";
+                TempData["MessageType"] = "success";
                 return RedirectToAction(nameof(Index));
             }
             return View(vm);
@@ -136,6 +139,9 @@ namespace Eventure.Controllers
             ev.MaxParticipants = vm.MaxParticipants;
 
             await _context.SaveChangesAsync();
+
+            TempData["Message"] = "Wydarzenie zostało zaktualizowane.";
+            TempData["MessageType"] = "success";
             return RedirectToAction(nameof(Index));
         }
 
@@ -174,6 +180,9 @@ namespace Eventure.Controllers
 
             _context.Events.Remove(ev);
             await _context.SaveChangesAsync();
+
+            TempData["Message"] = "Wydarzenie zostało usunięte.";
+            TempData["MessageType"] = "success";
             return RedirectToAction(nameof(Index));
         }
 
@@ -194,10 +203,16 @@ namespace Eventure.Controllers
             bool alreadyJoined = ev.Participants.Any(p => p.UserId == user.Id);
 
             if (alreadyJoined)
+            {
+                TempData["Message"] = "Już bierzesz udział w tym wydarzeniu.";
+                TempData["MessageType"] = "warning";
                 return RedirectToAction(nameof(Details), new { id });
+            }
 
             if (ev.MaxParticipants.HasValue && ev.Participants.Count >= ev.MaxParticipants)
             {
+                TempData["Message"] = "Brak miejsc – wydarzenie jest pełne.";
+                TempData["MessageType"] = "danger";
                 return RedirectToAction(nameof(Details), new { id });
             }
 
@@ -210,6 +225,8 @@ namespace Eventure.Controllers
             _context.EventParticipants.Add(participants);
             await _context.SaveChangesAsync();
 
+            TempData["Message"] = "Pomyślnie dołączono do wydarzenia.";
+            TempData["MessageType"] = "success";
             return RedirectToAction(nameof(Details), new { id });
         }
 
@@ -224,11 +241,17 @@ namespace Eventure.Controllers
                 .FirstOrDefaultAsync(p => p.EventId == id && p.UserId == user.Id);
 
             if (participant == null)
+            {
+                TempData["Message"] = "Nie jesteś uczestnikiem tego wydarzenia.";
+                TempData["MessageType"] = "warning";
                 return RedirectToAction(nameof(Details), new { id });
+            }
 
             _context.EventParticipants.Remove(participant);
             await _context.SaveChangesAsync();
 
+            TempData["Message"] = "Pomyślnie opuściłeś wydarzenie.";
+            TempData["MessageType"] = "success";
             return RedirectToAction(nameof(Details), new { id });
         }
 

@@ -38,6 +38,14 @@
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
+            @if (TempData["Message"] != null)
+            {
+                var type = TempData["MessageType"]?.ToString() ?? "info";
+                <div class="alert alert-@type alert-dismissible fade show mt-3 mx-3" role="alert">
+                    @TempData["Message"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zamknij"></button>
+                </div>
+            }
         </main>
     </div>
 
