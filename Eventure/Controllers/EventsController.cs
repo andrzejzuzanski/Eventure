@@ -64,5 +64,18 @@ namespace Eventure.Controllers
             }
             return View(vm);
         }
+
+        // GET: Events/Details
+        public async Task<IActionResult> Details(int id)
+        {
+            var ev = await _context.Events
+                .Include(e => e.Organizer)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if(ev == null)
+                return NotFound();
+
+            return View(ev);
+        }
     }
 }
