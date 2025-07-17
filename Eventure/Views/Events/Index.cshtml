@@ -5,6 +5,20 @@
 }
 
 <h2>All Events</h2>
+<form method="get" class="row mb-4">
+    <div class="col-md-4">
+        <input name="searchTitle" class="form-control" placeholder="Szukaj po tytule" value="@Context.Request.Query["searchTitle"]" />
+    </div>
+    <div class="col-md-3">
+        <input name="location" class="form-control" placeholder="Lokalizacja" value="@Context.Request.Query["location"]" />
+    </div>
+    <div class="col-md-3">
+        <input name="startDate" type="date" class="form-control" value="@Context.Request.Query["startDate"]" />
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Filtruj</button>
+    </div>
+</form>
 
 <table class="table table-bordered">
     <thead>

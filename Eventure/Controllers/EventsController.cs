@@ -22,11 +22,23 @@ namespace Eventure.Controllers
 
         // GET: Events 
         [AllowAnonymous]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchTitle, string location, DateTime? startDate)
         {
-            var events = await _context.Events
+            var eventsQuery = _context.Events
                 .Include(e => e.Organizer)
                 .OrderBy(e => e.StartDateTime)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchTitle))
+                eventsQuery = eventsQuery.Where(e => EF.Functions.Like(e.Title, $"%{searchTitle}%"));
+
+            if(!string.IsNullOrWhiteSpace(location))
+                eventsQuery = eventsQuery.Where(e => EF.Functions.Like(e.Location, $"%{location}%"));
+
+            if (startDate.HasValue)
+                eventsQuery = eventsQuery.Where(e => e.StartDateTime >= startDate.Value);
+
+            var events = await eventsQuery
                 .AsNoTracking()
                 .ToListAsync();
 
