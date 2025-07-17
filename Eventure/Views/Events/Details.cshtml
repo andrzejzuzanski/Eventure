@@ -59,7 +59,9 @@ else
     }
     else if (alreadyJoined)
     {
-        <p class="text-success">Jesteś zapisany na to wydarzenie.</p>
+        <form asp-action="Leave" asp-route-id="@Model.Id" method="post">
+            <button type="submit" class="btn btn-warning">Opuść wydarzenie</button>
+        </form>
     }
     else if (isFull)
     {

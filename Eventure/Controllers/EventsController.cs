@@ -76,7 +76,7 @@ namespace Eventure.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(e => e.Id == id);
 
-            if(ev == null)
+            if (ev == null)
                 return NotFound();
 
             return View(ev);
@@ -89,7 +89,7 @@ namespace Eventure.Controllers
             var ev = await _context.Events
                 .FindAsync(id);
 
-            if(ev == null)
+            if (ev == null)
                 return NotFound();
 
             var user = await _userManager.GetUserAsync(User);
@@ -114,18 +114,18 @@ namespace Eventure.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, EventCreateViewModel vm)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return View(vm);
 
             var ev = await _context.Events
                 .FindAsync(id);
 
-            if(ev == null)
+            if (ev == null)
                 return NotFound();
 
             var user = await _userManager.GetUserAsync(User);
 
-            if(ev.OrganizerId != user.Id)
+            if (ev.OrganizerId != user.Id)
                 return Forbid();
 
             ev.Title = vm.Title;
@@ -146,7 +146,7 @@ namespace Eventure.Controllers
                 .Include(e => e.Organizer)
                 .FirstOrDefaultAsync(e => e.Id == id);
 
-            if(ev == null) 
+            if (ev == null)
                 return NotFound();
 
             var user = await _userManager.GetUserAsync(User);
@@ -164,7 +164,7 @@ namespace Eventure.Controllers
         {
             var ev = await _context.Events.FindAsync(id);
 
-            if (ev == null) 
+            if (ev == null)
                 return NotFound();
 
             var user = await _userManager.GetUserAsync(User);
@@ -188,7 +188,7 @@ namespace Eventure.Controllers
                 .Include(e => e.Participants)
                 .FirstOrDefaultAsync(e => e.Id == id);
 
-            if(ev == null)
+            if (ev == null)
                 return NotFound();
 
             bool alreadyJoined = ev.Participants.Any(p => p.UserId == user.Id);
@@ -212,5 +212,24 @@ namespace Eventure.Controllers
 
             return RedirectToAction(nameof(Details), new { id });
         }
-    }
+
+        //POST Events/Leave
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Leave(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            var participant = await _context.EventParticipants
+                .FirstOrDefaultAsync(p => p.EventId == id && p.UserId == user.Id);
+
+            if (participant == null)
+                return RedirectToAction(nameof(Details), new { id });
+
+            _context.EventParticipants.Remove(participant);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Details), new { id });
+        }
+}
 }
