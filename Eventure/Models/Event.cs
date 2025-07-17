@@ -16,5 +16,6 @@ namespace Eventure.Models
         // Relations
         public string OrganizerId { get; set; }
         public ApplicationUser Organizer { get; set; }
+        public ICollection<EventParticipant> Participants { get; set; }
     }
 }
