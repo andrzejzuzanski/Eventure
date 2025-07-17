@@ -1,4 +1,5 @@
 ﻿using Eventure.Data;
+using Eventure.Helpers;
 using Eventure.Models;
 using Eventure.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -22,8 +23,10 @@ namespace Eventure.Controllers
 
         // GET: Events 
         [AllowAnonymous]
-        public async Task<IActionResult> Index(string searchTitle, string location, DateTime? startDate)
+        public async Task<IActionResult> Index(string searchTitle, string location, DateTime? startDate, int pageNumber = 1)
         {
+            int pageSize = 5;
+
             var eventsQuery = _context.Events
                 .Include(e => e.Organizer)
                 .OrderBy(e => e.StartDateTime)
@@ -38,11 +41,10 @@ namespace Eventure.Controllers
             if (startDate.HasValue)
                 eventsQuery = eventsQuery.Where(e => e.StartDateTime >= startDate.Value);
 
-            var events = await eventsQuery
-                .AsNoTracking()
-                .ToListAsync();
+            var paginated = await PaginatedList<Event>
+                .CreateAsunc(eventsQuery.AsNoTracking(),pageNumber, pageSize);
 
-            return View(events);
+            return View(paginated);
         }
 
         // GET: Events/Create

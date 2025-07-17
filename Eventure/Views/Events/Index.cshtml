@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Eventure.Models.Event>
+﻿@using Eventure.Helpers
+@model PaginatedList<Eventure.Models.Event>
 
 @{
     ViewData["Title"] = "All Events";
@@ -43,5 +44,45 @@
         }
     </tbody>
 </table>
+
+<nav aria-label="Nawigacja stron">
+    <ul class="pagination justify-content-center">
+        @if (Model.HasPreviousPage)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="Index"
+                   asp-route-pageNumber="@(Model.PageIndex - 1)"
+                   asp-route-searchTitle="@Context.Request.Query["searchTitle"]"
+                   asp-route-location="@Context.Request.Query["location"]"
+                   asp-route-startDate="@Context.Request.Query["startDate"]">
+                    &laquo; Poprzednia
+                </a>
+            </li>
+        }
+        else
+        {
+            <li class="page-item disabled"><span class="page-link">&laquo; Poprzednia</span></li>
+        }
+
+        <li class="page-item active"><span class="page-link">@Model.PageIndex</span></li>
+
+        @if (Model.HasNextPage)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="Index"
+                   asp-route-pageNumber="@(Model.PageIndex + 1)"
+                   asp-route-searchTitle="@Context.Request.Query["searchTitle"]"
+                   asp-route-location="@Context.Request.Query["location"]"
+                   asp-route-startDate="@Context.Request.Query["startDate"]">
+                    Następna &raquo;
+                </a>
+            </li>
+        }
+        else
+        {
+            <li class="page-item disabled"><span class="page-link">Następna &raquo;</span></li>
+        }
+    </ul>
+</nav>
 
 <a class="btn btn-primary" asp-action="Create">Create New Event</a>
