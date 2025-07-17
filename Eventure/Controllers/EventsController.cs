@@ -77,5 +77,100 @@ namespace Eventure.Controllers
 
             return View(ev);
         }
+
+
+        // GET: Events/Edit
+        public async Task<IActionResult> Edit(int id)
+        {
+            var ev = await _context.Events
+                .FindAsync(id);
+
+            if(ev == null)
+                return NotFound();
+
+            var user = await _userManager.GetUserAsync(User);
+            if (ev.OrganizerId != user.Id)
+                return Forbid();
+
+            var vm = new EventCreateViewModel
+            {
+                Title = ev.Title,
+                Description = ev.Description,
+                StartDateTime = ev.StartDateTime,
+                EndDateTime = ev.EndDateTime,
+                Location = ev.Location,
+                MaxParticipants = ev.MaxParticipants,
+            };
+
+            return View(vm);
+        }
+
+        // POST: Events/Edit
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, EventCreateViewModel vm)
+        {
+            if(!ModelState.IsValid)
+                return View(vm);
+
+            var ev = await _context.Events
+                .FindAsync(id);
+
+            if(ev == null)
+                return NotFound();
+
+            var user = await _userManager.GetUserAsync(User);
+
+            if(ev.OrganizerId != user.Id)
+                return Forbid();
+
+            ev.Title = vm.Title;
+            ev.Description = vm.Description;
+            ev.StartDateTime = vm.StartDateTime;
+            ev.EndDateTime = vm.EndDateTime;
+            ev.Location = vm.Location;
+            ev.MaxParticipants = vm.MaxParticipants;
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        // DELETE: Events/Delete
+        public async Task<IActionResult> Delete(int id)
+        {
+            var ev = await _context.Events
+                .Include(e => e.Organizer)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if(ev == null) 
+                return NotFound();
+
+            var user = await _userManager.GetUserAsync(User);
+
+            if (ev.OrganizerId != user.Id)
+                return Forbid();
+
+            return View(ev);
+        }
+
+        // POST: Events/Delete
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var ev = await _context.Events.FindAsync(id);
+
+            if (ev == null) 
+                return NotFound();
+
+            var user = await _userManager.GetUserAsync(User);
+
+            if (ev.OrganizerId != user.Id)
+                return Forbid();
+
+            _context.Events.Remove(ev);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
