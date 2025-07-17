@@ -232,6 +232,34 @@ namespace Eventure.Controllers
             return RedirectToAction(nameof(Details), new { id });
         }
 
+        //GET Events/MyEvents
+        public async Task<IActionResult> MyEvents()
+        {
+            var user = await GetCurrentUserAsync();
+
+            var organizedEvents = await _context.Events
+                .Where(e => e.OrganizerId == user.Id)
+                .OrderByDescending(e => e.StartDateTime)
+                .AsNoTracking()
+                .ToListAsync();
+
+            var joinedEvents = await _context.EventParticipants
+                .Where(p => p.UserId == user.Id)
+                .Include(p => p.Event)
+                    .ThenInclude(e => e.Organizer)
+                .OrderByDescending(p => p.Event.StartDateTime)
+                .AsNoTracking()
+                .ToListAsync();
+
+            var vm = new MyEventsViewModel
+            {
+                OrganizedEvents = organizedEvents,
+                JoinedEvents = joinedEvents.Select(p => p.Event).ToList(),
+            };
+
+            return View(vm);
+        }
+
         private Task<ApplicationUser> GetCurrentUserAsync()
         {
             return _userManager.GetUserAsync(User);

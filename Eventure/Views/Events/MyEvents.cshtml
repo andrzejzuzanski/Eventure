@@ -1,0 +1,41 @@
+﻿@model Eventure.ViewModels.MyEventsViewModel
+
+@{
+    ViewData["Title"] = "My Events";
+}
+
+<h2>Moje wydarzenia</h2>
+
+<h4>Jako organizator</h4>
+@if (Model.OrganizedEvents.Any())
+{
+    <ul class="list-group mb-4">
+        @foreach (var ev in Model.OrganizedEvents)
+        {
+            <li class="list-group-item">
+                <a asp-action="Details" asp-route-id="@ev.Id">@ev.Title</a> – @ev.StartDateTime.ToString("g")
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p><em>Nie zorganizowałeś jeszcze żadnego wydarzenia.</em></p>
+}
+
+<h4>Wydarzenia, w których bierzesz udział</h4>
+@if (Model.JoinedEvents.Any())
+{
+    <ul class="list-group">
+        @foreach (var ev in Model.JoinedEvents)
+        {
+            <li class="list-group-item">
+                <a asp-action="Details" asp-route-id="@ev.Id">@ev.Title</a> – @ev.StartDateTime.ToString("g") (organizator: @ev.Organizer?.UserName)
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p><em>Nie bierzesz udziału w żadnym wydarzeniu.</em></p>
+}
