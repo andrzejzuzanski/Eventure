@@ -46,7 +46,7 @@ namespace Eventure.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userManager.GetUserAsync(User);
+                var user = await GetCurrentUserAsync();
 
                 var newEvent = new Event
                 {
@@ -92,7 +92,7 @@ namespace Eventure.Controllers
             if (ev == null)
                 return NotFound();
 
-            var user = await _userManager.GetUserAsync(User);
+            var user = await GetCurrentUserAsync();
             if (ev.OrganizerId != user.Id)
                 return Forbid();
 
@@ -123,7 +123,7 @@ namespace Eventure.Controllers
             if (ev == null)
                 return NotFound();
 
-            var user = await _userManager.GetUserAsync(User);
+            var user = await GetCurrentUserAsync();
 
             if (ev.OrganizerId != user.Id)
                 return Forbid();
@@ -149,7 +149,7 @@ namespace Eventure.Controllers
             if (ev == null)
                 return NotFound();
 
-            var user = await _userManager.GetUserAsync(User);
+            var user = await GetCurrentUserAsync();
 
             if (ev.OrganizerId != user.Id)
                 return Forbid();
@@ -167,7 +167,7 @@ namespace Eventure.Controllers
             if (ev == null)
                 return NotFound();
 
-            var user = await _userManager.GetUserAsync(User);
+            var user = await GetCurrentUserAsync();
 
             if (ev.OrganizerId != user.Id)
                 return Forbid();
@@ -182,7 +182,7 @@ namespace Eventure.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Join(int id)
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await GetCurrentUserAsync();
 
             var ev = await _context.Events
                 .Include(e => e.Participants)
@@ -218,7 +218,7 @@ namespace Eventure.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Leave(int id)
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await GetCurrentUserAsync();
 
             var participant = await _context.EventParticipants
                 .FirstOrDefaultAsync(p => p.EventId == id && p.UserId == user.Id);
@@ -230,6 +230,11 @@ namespace Eventure.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Details), new { id });
+        }
+
+        private Task<ApplicationUser> GetCurrentUserAsync()
+        {
+            return _userManager.GetUserAsync(User);
         }
 }
 }
