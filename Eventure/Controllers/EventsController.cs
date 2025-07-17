@@ -27,6 +27,7 @@ namespace Eventure.Controllers
             var events = await _context.Events
                 .Include(e => e.Organizer)
                 .OrderBy(e => e.StartDateTime)
+                .AsNoTracking()
                 .ToListAsync();
 
             return View(events);
@@ -70,6 +71,9 @@ namespace Eventure.Controllers
         {
             var ev = await _context.Events
                 .Include(e => e.Organizer)
+                .Include(e => e.Participants)
+                    .ThenInclude(p => p.User)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(e => e.Id == id);
 
             if(ev == null)
@@ -171,6 +175,42 @@ namespace Eventure.Controllers
             _context.Events.Remove(ev);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        //POST Events/Join
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Join(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            var ev = await _context.Events
+                .Include(e => e.Participants)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if(ev == null)
+                return NotFound();
+
+            bool alreadyJoined = ev.Participants.Any(p => p.UserId == user.Id);
+
+            if (alreadyJoined)
+                return RedirectToAction(nameof(Details), new { id });
+
+            if (ev.MaxParticipants.HasValue && ev.Participants.Count >= ev.MaxParticipants)
+            {
+                return RedirectToAction(nameof(Details), new { id });
+            }
+
+            var participants = new EventParticipant
+            {
+                EventId = ev.Id,
+                UserId = user.Id
+            };
+
+            _context.EventParticipants.Add(participants);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Details), new { id });
         }
     }
 }

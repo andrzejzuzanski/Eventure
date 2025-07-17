@@ -26,9 +26,49 @@
     <dd class="col-sm-9">@Model.Organizer?.UserName</dd>
 </dl>
 
-<a asp-action="Index" class="btn btn-secondary">Back to List</a>
-@if (User.Identity?.IsAuthenticated == true && Model.OrganizerId == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value)
+@if (Model.Participants != null && Model.Participants.Any())
 {
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
-    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
+    <p><strong>Liczba uczestników:</strong> @Model.Participants.Count()</p>
+    <ul>
+        @foreach (var p in Model.Participants)
+        {
+            <li>@p.User?.UserName</li>
+        }
+    </ul>
+}
+else
+{
+    <p><em>Brak uczestników.</em></p>
+}
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>
+
+@using System.Security.Claims
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    bool alreadyJoined = Model.Participants?.Any(p => p.UserId == userId) ?? false;
+    bool isOrganizer = Model.OrganizerId == userId;
+    bool isFull = Model.MaxParticipants.HasValue && (Model.Participants?.Count() ?? 0) >= Model.MaxParticipants;
+
+    if (!alreadyJoined && !isOrganizer && !isFull)
+    {
+        <form asp-action="Join" asp-route-id="@Model.Id" method="post">
+            <button type="submit" class="btn btn-success">Dołącz do wydarzenia</button>
+        </form>
+    }
+    else if (alreadyJoined)
+    {
+        <p class="text-success">Jesteś zapisany na to wydarzenie.</p>
+    }
+    else if (isFull)
+    {
+        <p class="text-danger">Brak miejsc – wydarzenie pełne.</p>
+    }
+
+    if (isOrganizer)
+    {
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
+    }
 }
