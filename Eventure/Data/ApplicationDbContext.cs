@@ -13,6 +13,7 @@ namespace Eventure.Data
 
         public DbSet<Event> Events { get; set; }
         public DbSet<EventParticipant> EventParticipants { get; set; }
+        public DbSet<Category> Categories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -23,6 +24,11 @@ namespace Eventure.Data
                 eb.HasOne(e => e.Organizer)
                 .WithMany(u => u.EventsOrganised)
                 .HasForeignKey(e => e.OrganizerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+                eb.HasOne(e => e.Category)
+                .WithMany(c => c.Events)
+                .HasForeignKey(e => e.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
             });
 
@@ -37,6 +43,21 @@ namespace Eventure.Data
                 eb.HasOne(ep => ep.User)
                 .WithMany(u => u.EventsParticipating)
                 .HasForeignKey(ep => ep.UserId);
+            });
+
+            builder.Entity<Category>(eb =>
+            {
+                eb.Property(c => c.Name)
+                .IsRequired()
+                .HasMaxLength(50);
+
+                eb.HasData(
+                        new Category { Id = 1, Name = "Biznes" },
+                        new Category { Id = 2, Name = "Sport" },
+                        new Category { Id = 3, Name = "Kultura" },
+                        new Category { Id = 4, Name = "Technologia" },
+                        new Category { Id = 5, Name = "Edukacja" }
+                    );
             });
         }
     }

@@ -17,5 +17,7 @@ namespace Eventure.Models
         public string OrganizerId { get; set; }
         public ApplicationUser Organizer { get; set; }
         public ICollection<EventParticipant> Participants { get; set; }
+        public int CategoryId { get; set; }
+        public Category? Category { get; set; }
     }
 }
