@@ -32,7 +32,12 @@
         <label asp-for="MaxParticipants" class="form-label"></label>
         <input asp-for="MaxParticipants" class="form-control" />
     </div>
-    <button type="submit" class="btn btn-success">Create</button>
+    <div class="form-group">
+        <label asp-for="CategoryId" class="control-label"></label>
+        <select asp-for="CategoryId" class="form-control" asp-items="Model.Categories"></select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-success">Save</button>
     <a asp-action="Index" class="btn btn-secondary">Cancel</a>
 </form>
 

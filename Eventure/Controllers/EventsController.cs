@@ -5,6 +5,7 @@ using Eventure.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace Eventure.Controllers
@@ -50,7 +51,12 @@ namespace Eventure.Controllers
         // GET: Events/Create
         public IActionResult Create()
         {
-            return View();
+            var vm = new EventCreateViewModel
+            {
+                Categories = GetCategorySelectList()
+            };
+
+            return View(vm);
         }
 
         // POST: Events/Create
@@ -58,6 +64,7 @@ namespace Eventure.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(EventCreateViewModel vm)
         {
+            ModelState.Remove(nameof(vm.Categories));
             if (ModelState.IsValid)
             {
                 var user = await GetCurrentUserAsync();
@@ -70,7 +77,8 @@ namespace Eventure.Controllers
                     EndDateTime = vm.EndDateTime,
                     Location = vm.Location,
                     MaxParticipants = vm.MaxParticipants,
-                    OrganizerId = user.Id
+                    OrganizerId = user.Id,
+                    CategoryId = vm.CategoryId
                 };
 
                 _context.Add(newEvent);
@@ -80,6 +88,7 @@ namespace Eventure.Controllers
                 TempData["MessageType"] = "success";
                 return RedirectToAction(nameof(Index));
             }
+            vm.Categories = GetCategorySelectList();
             return View(vm);
         }
 
@@ -90,6 +99,7 @@ namespace Eventure.Controllers
                 .Include(e => e.Organizer)
                 .Include(e => e.Participants)
                     .ThenInclude(p => p.User)
+                .Include(e => e.Category)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(e => e.Id == id);
 
@@ -121,8 +131,11 @@ namespace Eventure.Controllers
                 EndDateTime = ev.EndDateTime,
                 Location = ev.Location,
                 MaxParticipants = ev.MaxParticipants,
+                CategoryId = ev.CategoryId,
+                Categories = GetCategorySelectList()
             };
 
+            vm.Categories = GetCategorySelectList();
             return View(vm);
         }
 
@@ -131,8 +144,12 @@ namespace Eventure.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, EventCreateViewModel vm)
         {
+            ModelState.Remove(nameof(vm.Categories));
             if (!ModelState.IsValid)
+            {
+                vm.Categories = GetCategorySelectList();
                 return View(vm);
+            }
 
             var ev = await _context.Events
                 .FindAsync(id);
@@ -151,6 +168,7 @@ namespace Eventure.Controllers
             ev.EndDateTime = vm.EndDateTime;
             ev.Location = vm.Location;
             ev.MaxParticipants = vm.MaxParticipants;
+            ev.CategoryId = vm.CategoryId;
 
             await _context.SaveChangesAsync();
 
@@ -301,5 +319,16 @@ namespace Eventure.Controllers
         {
             return _userManager.GetUserAsync(User);
         }
-}
+        private List<SelectListItem> GetCategorySelectList()
+        {
+            return _context.Categories
+                .OrderBy(c => c.Name)
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.Name
+                })
+                .ToList();
+        }
+    }
 }
