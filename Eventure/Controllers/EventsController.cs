@@ -24,7 +24,7 @@ namespace Eventure.Controllers
 
         // GET: Events 
         [AllowAnonymous]
-        public async Task<IActionResult> Index(string searchTitle, string location, DateTime? startDate, int pageNumber = 1)
+        public async Task<IActionResult> Index(string searchTitle, string location, DateTime? startDate, int? categoryId, int pageNumber = 1)
         {
             int pageSize = 5;
 
@@ -42,8 +42,28 @@ namespace Eventure.Controllers
             if (startDate.HasValue)
                 eventsQuery = eventsQuery.Where(e => e.StartDateTime >= startDate.Value);
 
+            if (categoryId.HasValue)
+                eventsQuery = eventsQuery.Where(e => e.CategoryId == categoryId.Value);
+
             var paginated = await PaginatedList<Event>
                 .CreateAsunc(eventsQuery.AsNoTracking(),pageNumber, pageSize);
+
+            var categories = await _context.Categories
+                .OrderBy(c => c.Name)
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.Name
+                })
+                .ToListAsync();
+
+            categories.Insert(0, new SelectListItem
+            {
+                Value = "",
+                Text = "-- Wszystkie kategorie --"
+            });
+
+            ViewBag.Categories = new SelectList(categories, "Value", "Text", categoryId?.ToString());
 
             return View(paginated);
         }

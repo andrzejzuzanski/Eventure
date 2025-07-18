@@ -5,22 +5,28 @@
     ViewData["Title"] = "All Events";
 }
 
-<h2>All Events</h2>
-<form method="get" class="row mb-4">
-    <div class="col-md-4">
+
+<form method="get" class="row mb-4 align-items-end">
+    <div class="col-md-3">
         <input name="searchTitle" class="form-control" placeholder="Szukaj po tytule" value="@Context.Request.Query["searchTitle"]" />
     </div>
-    <div class="col-md-3">
+    <div class="col-md-2">
         <input name="location" class="form-control" placeholder="Lokalizacja" value="@Context.Request.Query["location"]" />
     </div>
-    <div class="col-md-3">
+    <div class="col-md-2">
         <input name="startDate" type="date" class="form-control" value="@Context.Request.Query["startDate"]" />
+    </div>
+    <div class="col-md-3">
+        <select name="categoryId" class="form-select"
+                asp-items="(IEnumerable<SelectListItem>)ViewBag.Categories">
+        </select>
     </div>
     <div class="col-md-2">
         <button type="submit" class="btn btn-primary w-100">Filtruj</button>
     </div>
 </form>
 
+<h2>All Events</h2>
 <table class="table table-bordered">
     <thead>
         <tr>
@@ -54,7 +60,8 @@
                    asp-route-pageNumber="@(Model.PageIndex - 1)"
                    asp-route-searchTitle="@Context.Request.Query["searchTitle"]"
                    asp-route-location="@Context.Request.Query["location"]"
-                   asp-route-startDate="@Context.Request.Query["startDate"]">
+                   asp-route-startDate="@Context.Request.Query["startDate"]"
+                   asp-route-categoryId="@Context.Request.Query["categoryId"]">
                     &laquo; Poprzednia
                 </a>
             </li>
@@ -73,7 +80,8 @@
                    asp-route-pageNumber="@(Model.PageIndex + 1)"
                    asp-route-searchTitle="@Context.Request.Query["searchTitle"]"
                    asp-route-location="@Context.Request.Query["location"]"
-                   asp-route-startDate="@Context.Request.Query["startDate"]">
+                   asp-route-startDate="@Context.Request.Query["startDate"]"
+                   asp-route-categoryId="@Context.Request.Query["categoryId"]">
                     Następna &raquo;
                 </a>
             </li>
