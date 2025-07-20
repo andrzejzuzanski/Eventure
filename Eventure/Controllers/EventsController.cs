@@ -46,7 +46,7 @@ namespace Eventure.Controllers
                 eventsQuery = eventsQuery.Where(e => e.CategoryId == categoryId.Value);
 
             var paginated = await PaginatedList<Event>
-                .CreateAsunc(eventsQuery.AsNoTracking(),pageNumber, pageSize);
+                .CreateAsync(eventsQuery.AsNoTracking(),pageNumber, pageSize);
 
             var categories = await _context.Categories
                 .OrderBy(c => c.Name)
@@ -69,11 +69,11 @@ namespace Eventure.Controllers
         }
 
         // GET: Events/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             var vm = new EventCreateViewModel
             {
-                Categories = GetCategorySelectList()
+                Categories = await GetCategorySelectList()
             };
 
             return View(vm);
@@ -108,7 +108,7 @@ namespace Eventure.Controllers
                 TempData["MessageType"] = "success";
                 return RedirectToAction(nameof(Index));
             }
-            vm.Categories = GetCategorySelectList();
+            vm.Categories = await GetCategorySelectList();
             return View(vm);
         }
 
@@ -152,10 +152,10 @@ namespace Eventure.Controllers
                 Location = ev.Location,
                 MaxParticipants = ev.MaxParticipants,
                 CategoryId = ev.CategoryId,
-                Categories = GetCategorySelectList()
+                Categories = await GetCategorySelectList()
             };
 
-            vm.Categories = GetCategorySelectList();
+            vm.Categories = await GetCategorySelectList();
             return View(vm);
         }
 
@@ -167,7 +167,7 @@ namespace Eventure.Controllers
             ModelState.Remove(nameof(vm.Categories));
             if (!ModelState.IsValid)
             {
-                vm.Categories = GetCategorySelectList();
+                vm.Categories = await GetCategorySelectList();
                 return View(vm);
             }
 
@@ -339,16 +339,16 @@ namespace Eventure.Controllers
         {
             return _userManager.GetUserAsync(User);
         }
-        private List<SelectListItem> GetCategorySelectList()
+        private async Task<List<SelectListItem>> GetCategorySelectList()
         {
-            return _context.Categories
+            return await _context.Categories
                 .OrderBy(c => c.Name)
                 .Select(c => new SelectListItem
                 {
                     Value = c.Id.ToString(),
                     Text = c.Name
                 })
-                .ToList();
+                .ToListAsync();
         }
     }
 }
