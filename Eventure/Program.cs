@@ -24,6 +24,7 @@ namespace Eventure
             builder.Services.AddScoped<IEventService, EventService>();
             builder.Services.AddScoped<IUserContextService, UserContextService>();
             builder.Services.AddHttpContextAccessor();
+            builder.Services.AddScoped<INotificationService, NotificationService>();
 
             var app = builder.Build();
 

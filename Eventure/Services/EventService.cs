@@ -10,10 +10,12 @@ namespace Eventure.Services
     public class EventService : IEventService
     {
         private readonly ApplicationDbContext _context;
+        private readonly INotificationService _notificationService;
 
-        public EventService(ApplicationDbContext context)
+        public EventService(ApplicationDbContext context, INotificationService notificationService)
         {
             _context = context;
+            _notificationService = notificationService;
         }
 
         public async Task<bool> CanUserModifyEventAsync(int eventId, string userId)
@@ -181,10 +183,27 @@ namespace Eventure.Services
 
         public async Task<bool> UpdateEventAsync(int id, EventCreateViewModel vm, string userId)
         {
-            var ev = await _context.Events.FindAsync(id);
+            var ev = await _context.Events
+                .Include(e => e.Participants)
+                .ThenInclude(p => p.User)
+                .FirstOrDefaultAsync(e => e.Id == id);
 
             if (ev == null || ev.OrganizerId != userId)
                 return false;
+
+            var notifications = new List<string>();
+
+            if (ev.Title != vm.Title)
+                notifications.Add($"Tytuł wydarzenia został zmieniony na: {vm.Title}");
+
+            if (ev.StartDateTime != vm.StartDateTime)
+                notifications.Add($"Nowy termin rozpoczęcia: {vm.StartDateTime:dd.MM.yyyy HH:mm}");
+
+            if (ev.EndDateTime != vm.EndDateTime)
+                notifications.Add($"Nowy termin zakończenia: {vm.EndDateTime:dd.MM.yyyy HH:mm}");
+
+            if (ev.Location != vm.Location)
+                notifications.Add($"Lokalizacja wydarzenia została zmieniona na: {vm.Location}");
 
             ev.Title = vm.Title;
             ev.Description = vm.Description;
@@ -195,6 +214,17 @@ namespace Eventure.Services
             ev.CategoryId = vm.CategoryId;
 
             await _context.SaveChangesAsync();
+
+            if (notifications.Any() && ev.Participants.Any())
+            {
+                var message = string.Join("\n", notifications);
+
+                foreach (var user in ev.Participants)
+                {
+                    await _notificationService.AddNotificationAsync(user.UserId, message, ev.Id);
+                }
+            }
+
             return true;
         }
     }

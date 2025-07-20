@@ -1,0 +1,33 @@
+﻿@model List<Eventure.Models.Notification>
+
+@{
+    ViewData["Title"] = "Powiadomienia";
+}
+
+<h2>Powiadomienia</h2>
+
+@if (!Model.Any())
+{
+    <p>Brak powiadomień.</p>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var n in Model)
+        {
+            <li class="list-group-item @(n.IsRead ? "" : "fw-bold")">
+                <div>
+                    @n.Message
+                    <small class="text-muted d-block">@n.CreatedAt.ToLocalTime().ToString("g")</small>
+                </div>
+
+                @if (!n.IsRead)
+                {
+                    <form asp-action="MarkAsRead" asp-route-id="@n.Id" method="post" class="mt-1">
+                        <button class="btn btn-sm btn-outline-primary">Oznacz jako przeczytane</button>
+                    </form>
+                }
+            </li>
+        }
+    </ul>
+}

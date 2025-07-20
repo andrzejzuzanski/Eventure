@@ -14,6 +14,7 @@ namespace Eventure.Data
         public DbSet<Event> Events { get; set; }
         public DbSet<EventParticipant> EventParticipants { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -58,6 +59,25 @@ namespace Eventure.Data
                         new Category { Id = 4, Name = "Technologia" },
                         new Category { Id = 5, Name = "Edukacja" }
                     );
+            });
+
+            builder.Entity<Notification>(eb =>
+            {
+                eb.HasKey(n => n.Id);
+
+                eb.Property(n => n.Message)
+                .IsRequired()
+                .HasMaxLength(500);
+
+                eb.HasOne(n => n.User)
+                .WithMany()
+                .HasForeignKey(n => n.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
+                eb.HasOne(n => n.Event)
+                .WithMany()
+                .HasForeignKey(n => n.EventId)
+                .OnDelete(DeleteBehavior.SetNull);
             });
         }
     }
