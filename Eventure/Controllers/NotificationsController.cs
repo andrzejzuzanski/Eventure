@@ -33,6 +33,12 @@ namespace Eventure.Controllers
         public async Task<IActionResult> UnreadCount()
         {
             var user = await _userContextService.GetCurrentUserAsync();
+
+            if (user == null)
+            {
+                //return PartialView("_NotificationBell", 0
+                return NoContent();
+            }
             var unread = await _notificationService.GetUnreadAsync(user.Id);
             return PartialView("_NotificationBell", unread.Count);
         }
