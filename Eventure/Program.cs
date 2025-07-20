@@ -1,5 +1,6 @@
 using Eventure.Data;
 using Eventure.Models;
+using Eventure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +21,9 @@ namespace Eventure
             builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
+            builder.Services.AddScoped<IEventService, EventService>();
+            builder.Services.AddScoped<IUserContextService, UserContextService>();
+            builder.Services.AddHttpContextAccessor();
 
             var app = builder.Build();
 

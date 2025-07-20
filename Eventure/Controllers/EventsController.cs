@@ -1,6 +1,8 @@
-﻿using Eventure.Data;
+﻿using AspNetCoreGeneratedDocument;
+using Eventure.Data;
 using Eventure.Helpers;
 using Eventure.Models;
+using Eventure.Services;
 using Eventure.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -15,11 +17,15 @@ namespace Eventure.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IEventService _eventService;
+        private readonly IUserContextService _userContextService;
 
-        public EventsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public EventsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IEventService eventService, IUserContextService userContextService)
         {
             _context = context;
             _userManager = userManager;
+            _eventService = eventService;
+            _userContextService = userContextService;
         }
 
         // GET: Events 
@@ -28,40 +34,9 @@ namespace Eventure.Controllers
         {
             int pageSize = 5;
 
-            var eventsQuery = _context.Events
-                .Include(e => e.Organizer)
-                .OrderBy(e => e.StartDateTime)
-                .AsQueryable();
+            var paginated = await _eventService.GetFilteredEventsAsync(searchTitle, location, startDate, categoryId, pageNumber, pageSize);
 
-            if (!string.IsNullOrWhiteSpace(searchTitle))
-                eventsQuery = eventsQuery.Where(e => EF.Functions.Like(e.Title, $"%{searchTitle}%"));
-
-            if(!string.IsNullOrWhiteSpace(location))
-                eventsQuery = eventsQuery.Where(e => EF.Functions.Like(e.Location, $"%{location}%"));
-
-            if (startDate.HasValue)
-                eventsQuery = eventsQuery.Where(e => e.StartDateTime >= startDate.Value);
-
-            if (categoryId.HasValue)
-                eventsQuery = eventsQuery.Where(e => e.CategoryId == categoryId.Value);
-
-            var paginated = await PaginatedList<Event>
-                .CreateAsync(eventsQuery.AsNoTracking(),pageNumber, pageSize);
-
-            var categories = await _context.Categories
-                .OrderBy(c => c.Name)
-                .Select(c => new SelectListItem
-                {
-                    Value = c.Id.ToString(),
-                    Text = c.Name
-                })
-                .ToListAsync();
-
-            categories.Insert(0, new SelectListItem
-            {
-                Value = "",
-                Text = "-- Wszystkie kategorie --"
-            });
+            var categories = await _eventService.GetCategorySelectListAsync();
 
             ViewBag.Categories = new SelectList(categories, "Value", "Text", categoryId?.ToString());
 
@@ -73,7 +48,7 @@ namespace Eventure.Controllers
         {
             var vm = new EventCreateViewModel
             {
-                Categories = await GetCategorySelectList()
+                Categories = await _eventService.GetCategorySelectListAsync()
             };
 
             return View(vm);
@@ -85,43 +60,25 @@ namespace Eventure.Controllers
         public async Task<IActionResult> Create(EventCreateViewModel vm)
         {
             ModelState.Remove(nameof(vm.Categories));
+
             if (ModelState.IsValid)
             {
-                var user = await GetCurrentUserAsync();
+                var user = await _userContextService.GetCurrentUserAsync();
 
-                var newEvent = new Event
-                {
-                    Title = vm.Title,
-                    Description = vm.Description,
-                    StartDateTime = vm.StartDateTime,
-                    EndDateTime = vm.EndDateTime,
-                    Location = vm.Location,
-                    MaxParticipants = vm.MaxParticipants,
-                    OrganizerId = user.Id,
-                    CategoryId = vm.CategoryId
-                };
-
-                _context.Add(newEvent);
-                await _context.SaveChangesAsync();
+                await _eventService.CreateEventAsync(vm, user.Id);
 
                 TempData["Message"] = "Wydarzenie zostało utworzone.";
                 TempData["MessageType"] = "success";
                 return RedirectToAction(nameof(Index));
             }
-            vm.Categories = await GetCategorySelectList();
+            vm.Categories = await _eventService.GetCategorySelectListAsync();
             return View(vm);
         }
 
         // GET: Events/Details
         public async Task<IActionResult> Details(int id)
         {
-            var ev = await _context.Events
-                .Include(e => e.Organizer)
-                .Include(e => e.Participants)
-                    .ThenInclude(p => p.User)
-                .Include(e => e.Category)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(e => e.Id == id);
+            var ev = await _eventService.GetEventWithDetailsAsync(id);
 
             if (ev == null)
                 return NotFound();
@@ -133,14 +90,13 @@ namespace Eventure.Controllers
         // GET: Events/Edit
         public async Task<IActionResult> Edit(int id)
         {
-            var ev = await _context.Events
-                .FindAsync(id);
+            var ev = await _eventService.GetEventByIdAsync(id);
 
             if (ev == null)
                 return NotFound();
 
-            var user = await GetCurrentUserAsync();
-            if (ev.OrganizerId != user.Id)
+            var user = await _userContextService.GetCurrentUserAsync();
+            if (!await _eventService.CanUserModifyEventAsync(id, user.Id))
                 return Forbid();
 
             var vm = new EventCreateViewModel
@@ -152,10 +108,10 @@ namespace Eventure.Controllers
                 Location = ev.Location,
                 MaxParticipants = ev.MaxParticipants,
                 CategoryId = ev.CategoryId,
-                Categories = await GetCategorySelectList()
+                Categories = await _eventService.GetCategorySelectListAsync()
             };
 
-            vm.Categories = await GetCategorySelectList();
+            //vm.Categories = await _eventService.GetCategorySelectListAsync();
             return View(vm);
         }
 
@@ -167,30 +123,16 @@ namespace Eventure.Controllers
             ModelState.Remove(nameof(vm.Categories));
             if (!ModelState.IsValid)
             {
-                vm.Categories = await GetCategorySelectList();
+                vm.Categories = await _eventService.GetCategorySelectListAsync();
                 return View(vm);
             }
 
-            var ev = await _context.Events
-                .FindAsync(id);
+            var user = await _userContextService.GetCurrentUserAsync();
 
-            if (ev == null)
+            var isSuccess = await _eventService.UpdateEventAsync(id, vm, user.Id);
+
+            if(!isSuccess)
                 return NotFound();
-
-            var user = await GetCurrentUserAsync();
-
-            if (ev.OrganizerId != user.Id)
-                return Forbid();
-
-            ev.Title = vm.Title;
-            ev.Description = vm.Description;
-            ev.StartDateTime = vm.StartDateTime;
-            ev.EndDateTime = vm.EndDateTime;
-            ev.Location = vm.Location;
-            ev.MaxParticipants = vm.MaxParticipants;
-            ev.CategoryId = vm.CategoryId;
-
-            await _context.SaveChangesAsync();
 
             TempData["Message"] = "Wydarzenie zostało zaktualizowane.";
             TempData["MessageType"] = "success";
@@ -200,16 +142,14 @@ namespace Eventure.Controllers
         // DELETE: Events/Delete
         public async Task<IActionResult> Delete(int id)
         {
-            var ev = await _context.Events
-                .Include(e => e.Organizer)
-                .FirstOrDefaultAsync(e => e.Id == id);
+            var ev = await _eventService.GetEventWithDetailsAsync(id);
 
             if (ev == null)
                 return NotFound();
 
-            var user = await GetCurrentUserAsync();
+            var user = await _userContextService.GetCurrentUserAsync();
 
-            if (ev.OrganizerId != user.Id)
+            if (!await _eventService.CanUserModifyEventAsync(id, user.Id))
                 return Forbid();
 
             return View(ev);
@@ -220,18 +160,11 @@ namespace Eventure.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var ev = await _context.Events.FindAsync(id);
+            var user = await _userContextService.GetCurrentUserAsync();
+            var isSuccess = await _eventService.DeleteEventAsync(id, user.Id);
 
-            if (ev == null)
+            if(!isSuccess)
                 return NotFound();
-
-            var user = await GetCurrentUserAsync();
-
-            if (ev.OrganizerId != user.Id)
-                return Forbid();
-
-            _context.Events.Remove(ev);
-            await _context.SaveChangesAsync();
 
             TempData["Message"] = "Wydarzenie zostało usunięte.";
             TempData["MessageType"] = "success";
@@ -243,43 +176,21 @@ namespace Eventure.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Join(int id)
         {
-            var user = await GetCurrentUserAsync();
+            var user = await _userContextService.GetCurrentUserAsync();
 
-            var ev = await _context.Events
-                .Include(e => e.Participants)
-                .FirstOrDefaultAsync(e => e.Id == id);
+            var (isSuccess, message) = await _eventService.JoinEventAsync(id, user.Id);
 
-            if (ev == null)
-                return NotFound();
-
-            bool alreadyJoined = ev.Participants.Any(p => p.UserId == user.Id);
-
-            if (alreadyJoined)
+            if (isSuccess)
             {
-                TempData["Message"] = "Już bierzesz udział w tym wydarzeniu.";
-                TempData["MessageType"] = "warning";
-                return RedirectToAction(nameof(Details), new { id });
+                TempData["Message"] = message;
+                TempData["MessageType"] = "success";
             }
-
-            if (ev.MaxParticipants.HasValue && ev.Participants.Count >= ev.MaxParticipants)
+            else
             {
-                TempData["Message"] = "Brak miejsc – wydarzenie jest pełne.";
+                TempData["Message"] = message;
                 TempData["MessageType"] = "danger";
-                return RedirectToAction(nameof(Details), new { id });
             }
-
-            var participants = new EventParticipant
-            {
-                EventId = ev.Id,
-                UserId = user.Id
-            };
-
-            _context.EventParticipants.Add(participants);
-            await _context.SaveChangesAsync();
-
-            TempData["Message"] = "Pomyślnie dołączono do wydarzenia.";
-            TempData["MessageType"] = "success";
-            return RedirectToAction(nameof(Details), new { id });
+                return RedirectToAction(nameof(Details), new { id });
         }
 
         //POST Events/Leave
@@ -287,68 +198,30 @@ namespace Eventure.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Leave(int id)
         {
-            var user = await GetCurrentUserAsync();
+            var user = await _userContextService.GetCurrentUserAsync();
+            var (isSuccess, message) = await _eventService.LeaveEventAsync(id, user.Id);
 
-            var participant = await _context.EventParticipants
-                .FirstOrDefaultAsync(p => p.EventId == id && p.UserId == user.Id);
-
-            if (participant == null)
+            if (isSuccess)
+            {
+                TempData["Message"] = "Pomyślnie opuściłeś wydarzenie.";
+                TempData["MessageType"] = "success";
+            }
+            else
             {
                 TempData["Message"] = "Nie jesteś uczestnikiem tego wydarzenia.";
                 TempData["MessageType"] = "warning";
-                return RedirectToAction(nameof(Details), new { id });
             }
 
-            _context.EventParticipants.Remove(participant);
-            await _context.SaveChangesAsync();
-
-            TempData["Message"] = "Pomyślnie opuściłeś wydarzenie.";
-            TempData["MessageType"] = "success";
             return RedirectToAction(nameof(Details), new { id });
         }
 
         //GET Events/MyEvents
         public async Task<IActionResult> MyEvents()
         {
-            var user = await GetCurrentUserAsync();
-
-            var organizedEvents = await _context.Events
-                .Where(e => e.OrganizerId == user.Id)
-                .OrderByDescending(e => e.StartDateTime)
-                .AsNoTracking()
-                .ToListAsync();
-
-            var joinedEvents = await _context.EventParticipants
-                .Where(p => p.UserId == user.Id)
-                .Include(p => p.Event)
-                    .ThenInclude(e => e.Organizer)
-                .OrderByDescending(p => p.Event.StartDateTime)
-                .AsNoTracking()
-                .ToListAsync();
-
-            var vm = new MyEventsViewModel
-            {
-                OrganizedEvents = organizedEvents,
-                JoinedEvents = joinedEvents.Select(p => p.Event).ToList(),
-            };
+            var user = await _userContextService.GetCurrentUserAsync();
+            var vm = await _eventService.GetUserEventsAsync(user.Id);
 
             return View(vm);
-        }
-
-        private Task<ApplicationUser> GetCurrentUserAsync()
-        {
-            return _userManager.GetUserAsync(User);
-        }
-        private async Task<List<SelectListItem>> GetCategorySelectList()
-        {
-            return await _context.Categories
-                .OrderBy(c => c.Name)
-                .Select(c => new SelectListItem
-                {
-                    Value = c.Id.ToString(),
-                    Text = c.Name
-                })
-                .ToListAsync();
         }
     }
 }
