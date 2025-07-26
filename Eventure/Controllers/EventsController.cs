@@ -19,13 +19,15 @@ namespace Eventure.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEventService _eventService;
         private readonly IUserContextService _userContextService;
+        private readonly ICommentService _commentService;
 
-        public EventsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IEventService eventService, IUserContextService userContextService)
+        public EventsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IEventService eventService, IUserContextService userContextService, ICommentService commentService)
         {
             _context = context;
             _userManager = userManager;
             _eventService = eventService;
             _userContextService = userContextService;
+            _commentService = commentService;
         }
 
         // GET: Events 
@@ -79,11 +81,26 @@ namespace Eventure.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var ev = await _eventService.GetEventWithDetailsAsync(id);
-
             if (ev == null)
                 return NotFound();
 
-            return View(ev);
+            var user = await _userContextService.GetCurrentUserAsync();
+            bool isParticipant = user != null && (ev.OrganizerId == user.Id || ev.Participants.Any(p => p.UserId == user.Id));
+
+            List<Comment> comments = new List<Comment>();
+            if (isParticipant)
+            {
+                comments = await _commentService.GetCommentsForEventAsync(id);
+            }
+
+            var viewModel = new EventDetailsViewModel
+            {
+                Event = ev,
+                RootComments = comments,
+                IsUserParticipant = isParticipant
+            };
+
+            return View(viewModel);
         }
 
 
@@ -111,7 +128,6 @@ namespace Eventure.Controllers
                 Categories = await _eventService.GetCategorySelectListAsync()
             };
 
-            //vm.Categories = await _eventService.GetCategorySelectListAsync();
             return View(vm);
         }
 

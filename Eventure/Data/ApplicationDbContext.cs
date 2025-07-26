@@ -15,6 +15,8 @@ namespace Eventure.Data
         public DbSet<EventParticipant> EventParticipants { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Comment> Comments { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -78,6 +80,17 @@ namespace Eventure.Data
                 .WithMany()
                 .HasForeignKey(n => n.EventId)
                 .OnDelete(DeleteBehavior.SetNull);
+            });
+
+            builder.Entity<Comment>(eb =>
+            {
+                eb.HasOne(c => c.User).WithMany().HasForeignKey(c => c.UserId).OnDelete(DeleteBehavior.Restrict);
+                eb.HasOne(c => c.Event).WithMany().HasForeignKey(c => c.EventId);
+
+                eb.HasOne(c => c.ParentComment)
+                  .WithMany(c => c.Replies)
+                  .HasForeignKey(c => c.ParentCommentId)
+                  .OnDelete(DeleteBehavior.Restrict);
             });
         }
     }

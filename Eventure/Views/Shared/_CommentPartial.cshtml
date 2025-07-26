@@ -1,0 +1,24 @@
+﻿@*Views/Shared/_CommentPartial.cshtml *@
+@model Eventure.Models.Comment
+
+<div class="comment-container border-start ps-3 mb-3">
+    <div class="d-flex justify-content-between align-items-center">
+        <small>
+            <strong>@Model.User?.UserName</strong> - @Model.CreatedAt.ToString("g")
+        </small>
+        <button class="btn btn-sm btn-link" onclick="showReplyForm(@Model.Id)">Odpowiedz</button>
+    </div>
+    <p class="mb-1">@Model.Content</p>
+
+    @* Miejsce na formularz odpowiedzi, który pojawi się po kliknięciu *@
+    <div id="reply-form-container-@Model.Id" style="display: none;"></div>
+
+    @* Rekurencyjne wywołanie dla wszystkich odpowiedzi na ten komentarz *@
+    @if (Model.Replies != null && Model.Replies.Any())
+    {
+        foreach (var reply in Model.Replies)
+        {
+            <partial name="_CommentPartial" model="reply" />
+        }
+    }
+</div>

@@ -1,39 +1,39 @@
-﻿@model Eventure.Models.Event
+﻿@model Eventure.ViewModels.EventDetailsViewModel
 
 @{
     ViewData["Title"] = "Event Details";
 }
 
-<h2>@Model.Title</h2>
+<h2>@Model.Event.Title</h2>
 
 <dl class="row">
     <dt class="col-sm-3">Description</dt>
-    <dd class="col-sm-9">@Model.Description</dd>
+    <dd class="col-sm-9">@Model.Event.Description</dd>
 
     <dt class="col-sm-3">Start</dt>
-    <dd class="col-sm-9">@Model.StartDateTime.ToString("f")</dd>
+    <dd class="col-sm-9">@Model.Event.StartDateTime.ToString("f")</dd>
 
     <dt class="col-sm-3">End</dt>
-    <dd class="col-sm-9">@Model.EndDateTime.ToString("f")</dd>
+    <dd class="col-sm-9">@Model.Event.EndDateTime.ToString("f")</dd>
 
     <dt class="col-sm-3">Location</dt>
-    <dd class="col-sm-9">@Model.Location</dd>
+    <dd class="col-sm-9">@Model.Event.Location</dd>
 
     <dt class="col-sm-3">Max Participants</dt>
-    <dd class="col-sm-9">@Model.MaxParticipants</dd>
+    <dd class="col-sm-9">@Model.Event.MaxParticipants</dd>
 
     <dt class="col-sm-3">Organizer</dt>
-    <dd class="col-sm-9">@Model.Organizer?.UserName</dd>
+    <dd class="col-sm-9">@Model.Event.Organizer?.UserName</dd>
 
     <dt class="col-sm-3">Category</dt>
-    <dd class="col-sm-9">@Model.Category?.Name</dd>
+    <dd class="col-sm-9">@Model.Event.Category?.Name</dd>
 </dl>
 
-@if (Model.Participants != null && Model.Participants.Any())
+@if (Model.Event.Participants != null && Model.Event.Participants.Any())
 {
-    <p><strong>Liczba uczestników:</strong> @Model.Participants.Count()</p>
+    <p><strong>Liczba uczestników:</strong> @Model.Event.Participants.Count()</p>
     <ul>
-        @foreach (var p in Model.Participants)
+        @foreach (var p in Model.Event.Participants)
         {
             <li>@p.User?.UserName</li>
         }
@@ -50,19 +50,19 @@ else
 @if (User.Identity?.IsAuthenticated == true)
 {
     var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    bool alreadyJoined = Model.Participants?.Any(p => p.UserId == userId) ?? false;
-    bool isOrganizer = Model.OrganizerId == userId;
-    bool isFull = Model.MaxParticipants.HasValue && (Model.Participants?.Count() ?? 0) >= Model.MaxParticipants;
+    bool alreadyJoined = Model.Event.Participants?.Any(p => p.UserId == userId) ?? false;
+    bool isOrganizer = Model.Event.OrganizerId == userId;
+    bool isFull = Model.Event.MaxParticipants.HasValue && (Model.Event.Participants?.Count() ?? 0) >= Model.Event.MaxParticipants;
 
     if (!alreadyJoined && !isOrganizer && !isFull)
     {
-        <form asp-action="Join" asp-route-id="@Model.Id" method="post">
+        <form asp-action="Join" asp-route-id="@Model.Event.Id" method="post">
             <button type="submit" class="btn btn-success">Dołącz do wydarzenia</button>
         </form>
     }
     else if (alreadyJoined)
     {
-        <form asp-action="Leave" asp-route-id="@Model.Id" method="post">
+        <form asp-action="Leave" asp-route-id="@Model.Event.Id" method="post">
             <button type="submit" class="btn btn-warning">Opuść wydarzenie</button>
         </form>
     }
@@ -73,7 +73,52 @@ else
 
     if (isOrganizer)
     {
-        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
-        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
+        <a asp-action="Edit" asp-route-id="@Model.Event.Id" class="btn btn-primary">Edit</a>
+        <a asp-action="Delete" asp-route-id="@Model.Event.Id" class="btn btn-danger">Delete</a>
     }
+}
+
+<hr />
+
+@if (Model.IsUserParticipant)
+{
+    <h4>Komentarze (@Model.RootComments.Sum(c => 1 + c.Replies.Count))</h4>
+
+    @* Główny formularz do dodawania komentarzy (na najwyższym poziomie) *@
+    <div id="main-comment-form">
+        <partial name="_CommentFormPartial" view-data='new ViewDataDictionary(ViewData) { { "EventId", Model.Event.Id }, { "ParentCommentId", null } }' />
+    </div>
+
+    <div class="mt-4">
+        @foreach (var comment in Model.RootComments)
+        {
+            <partial name="_CommentPartial" model="comment" />
+        }
+    </div>
+}
+else
+{
+    <p class="alert alert-info">Musisz być uczestnikiem wydarzenia, aby zobaczyć i dodawać komentarze.</p>
+}
+
+
+@section Scripts {
+    <script>
+        function showReplyForm(parentCommentId) {
+            document.querySelectorAll('[id^="reply-form-container-"]').forEach(container => {
+                container.style.display = 'none';
+                container.innerHTML = '';
+            });
+
+            const mainForm = document.getElementById('main-comment-form').querySelector('form');
+            const replyForm = mainForm.cloneNode(true);
+
+            replyForm.querySelector('input[name="ParentCommentId"]').value = parentCommentId;
+
+            const container = document.getElementById('reply-form-container-' + parentCommentId);
+            container.innerHTML = '';
+            container.appendChild(replyForm);
+            container.style.display = 'block';
+        }
+    </script>
 }

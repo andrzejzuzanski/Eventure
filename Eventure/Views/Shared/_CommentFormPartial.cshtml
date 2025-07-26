@@ -1,0 +1,24 @@
+﻿@* Views/Shared/_CommentFormPartial.cshtml *@
+@{
+    // Pobieramy dane przekazane z widoku Details.cshtml
+    var eventId = ViewData["EventId"];
+    int? parentCommentId = ViewData["ParentCommentId"] as int?;
+}
+
+<form asp-controller="Comments" asp-action="Add" method="post">
+    @Html.AntiForgeryToken()
+
+    @* 
+        TO JEST NAJWAŻNIEJSZA CZĘŚĆ.
+        Tworzymy ukryte pole, które wyśle ID wydarzenia razem z formularzem.
+        Jego atrybut 'value' musi być poprawnie ustawiony.
+    *@
+    <input type="hidden" name="EventId" value="@eventId" />
+
+    <input type="hidden" name="ParentCommentId" value="@parentCommentId" />
+
+    <div class="mb-3">
+        <textarea name="Content" class="form-control" rows="3" placeholder="Napisz komentarz..." required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Wyślij</button>
+</form>
