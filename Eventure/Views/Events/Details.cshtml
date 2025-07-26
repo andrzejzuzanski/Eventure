@@ -29,6 +29,12 @@
     <dd class="col-sm-9">@Model.Event.Category?.Name</dd>
 </dl>
 
+@if (Model.Event.Latitude.HasValue && Model.Event.Longitude.HasValue)
+{
+    <h4 class="mt-4">Lokalizacja na mapie</h4>
+    <div id="details-map" style="height: 400px; width: 100%;" class="border rounded"></div>
+}
+
 @if (Model.Event.Participants != null && Model.Event.Participants.Any())
 {
     <p><strong>Liczba uczestników:</strong> @Model.Event.Participants.Count()</p>
@@ -84,7 +90,6 @@ else
 {
     <h4>Komentarze (@Model.RootComments.Sum(c => 1 + c.Replies.Count))</h4>
 
-    @* Główny formularz do dodawania komentarzy (na najwyższym poziomie) *@
     <div id="main-comment-form">
         <partial name="_CommentFormPartial" view-data='new ViewDataDictionary(ViewData) { { "EventId", Model.Event.Id }, { "ParentCommentId", null } }' />
     </div>
@@ -112,7 +117,6 @@ else
 
             const mainForm = document.getElementById('main-comment-form').querySelector('form');
             const replyForm = mainForm.cloneNode(true);
-
             replyForm.querySelector('input[name="ParentCommentId"]').value = parentCommentId;
 
             const container = document.getElementById('reply-form-container-' + parentCommentId);
@@ -121,4 +125,24 @@ else
             container.style.display = 'block';
         }
     </script>
+
+    @if (Model.Event.Latitude.HasValue && Model.Event.Longitude.HasValue)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const lat = @Model.Event.Latitude.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                const lon = @Model.Event.Longitude.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+                const map = L.map('details-map').setView([lat, lon], 15);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+
+                L.marker([lat, lon]).addTo(map)
+                    .bindPopup('@Html.Raw(Model.Event.Title.Replace("'", "\\'"))')
+                    .openPopup();
+            });
+        </script>
+    }
 }

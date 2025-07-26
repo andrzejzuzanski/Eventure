@@ -2,7 +2,9 @@ using Eventure.Data;
 using Eventure.Models;
 using Eventure.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace Eventure
 {
@@ -12,11 +14,22 @@ namespace Eventure
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            var invariantCulture = new CultureInfo("");
+            CultureInfo.DefaultThreadCurrentCulture = invariantCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = invariantCulture;
+
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+            builder.Services.Configure<RequestLocalizationOptions>(options =>
+            {
+                options.DefaultRequestCulture = new RequestCulture(invariantCulture);
+                options.SupportedCultures = new List<CultureInfo> { invariantCulture };
+                options.SupportedUICultures = new List<CultureInfo> { invariantCulture };
+            });
 
             builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<ApplicationDbContext>();

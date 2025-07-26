@@ -34,5 +34,11 @@ namespace Eventure.ViewModels
         public int CategoryId { get; set; }
         [BindNever]
         public List<SelectListItem> Categories { get; set; }
+
+        [Display(Name = "Szerokość geograficzna (Latitude)")]
+        public double? Latitude { get; set; }
+
+        [Display(Name = "Długość geograficzna (Longitude)")]
+        public double? Longitude { get; set; }
     }
 }

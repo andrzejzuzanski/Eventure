@@ -18,8 +18,16 @@
     </div>
     <div class="mb-3">
         <label asp-for="Location" class="form-label"></label>
-        <input asp-for="Location" class="form-control" />
+        <div class="input-group">
+            <input asp-for="Location" class="form-control" />
+            <button class="btn btn-outline-secondary" type="button" id="geocode-button">Znajdź na mapie</button>
+        </div>
     </div>
+
+    <div id="form-map" style="height: 300px; width: 100%;" class="border rounded mb-3"></div>
+
+    <input asp-for="Latitude" type="hidden" />
+    <input asp-for="Longitude" type="hidden" />
     <div class="form-group">
         <label asp-for="StartDateTime" class="control-label"></label>
         <input asp-for="StartDateTime" class="form-control" type="datetime-local" value="@Model.StartDateTime.ToString("yyyy-MM-ddTHH:mm")" />
@@ -45,4 +53,85 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const latInput = document.getElementById('Latitude');
+            const lonInput = document.getElementById('Longitude');
+            const locationInput = document.getElementById('Location');
+            const geocodeButton = document.getElementById('geocode-button');
+
+            let initialLat = latInput.value ? parseFloat(latInput.value) : 52.23;
+            let initialLon = lonInput.value ? parseFloat(lonInput.value) : 21.01;
+            let initialZoom = latInput.value ? 15 : 6;
+
+            const map = L.map('form-map').setView([initialLat, initialLon], initialZoom);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+            let marker = L.marker([initialLat, initialLon]);
+
+            if (latInput.value && lonInput.value) {
+                marker.addTo(map);
+            }
+
+            function reverseGeocode(lat, lon) {
+                const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.display_name) {
+                            locationInput.value = data.display_name;
+                        }
+                    })
+                    .catch(error => console.error('Błąd podczas odwrotnego geokodowania:', error));
+            }
+
+            function updateMarkerAndInputs(lat, lon, shouldReverseGeocode = false) {
+                marker.setLatLng([lat, lon]);
+                if (!map.hasLayer(marker)) {
+                    marker.addTo(map);
+                }
+                map.setView([lat, lon], 15);
+
+                latInput.value = lat.toString().replace(',', '.');
+                lonInput.value = lon.toString().replace(',', '.');
+
+                if (shouldReverseGeocode) {
+                    reverseGeocode(lat, lon);
+                }
+            }
+
+            map.on('click', function(e) {
+                const lat = e.latlng.lat.toFixed(6);
+                const lon = e.latlng.lng.toFixed(6);
+                updateMarkerAndInputs(lat, lon, true);
+            });
+
+            geocodeButton.addEventListener('click', function () {
+                const address = locationInput.value;
+                if (!address) {
+                    alert('Proszę wpisać adres w polu lokalizacji.');
+                    return;
+                }
+
+                const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            const result = data[0];
+                            updateMarkerAndInputs(result.lat, result.lon);
+                        } else {
+                            alert('Nie znaleziono lokalizacji. Spróbuj podać bardziej szczegółowy adres.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Błąd podczas geokodowania:', error);
+                        alert('Wystąpił błąd podczas wyszukiwania adresu.');
+                    });
+            });
+        });
+    </script>
 }

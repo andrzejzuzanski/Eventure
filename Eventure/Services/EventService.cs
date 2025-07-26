@@ -35,7 +35,9 @@ namespace Eventure.Services
                 Location = vm.Location,
                 MaxParticipants = vm.MaxParticipants,
                 OrganizerId = organizerId,
-                CategoryId = vm.CategoryId
+                CategoryId = vm.CategoryId,
+                Latitude = vm.Latitude,
+                Longitude = vm.Longitude
             };
 
             _context.Add(newEvent);
@@ -212,6 +214,8 @@ namespace Eventure.Services
             ev.Location = vm.Location;
             ev.MaxParticipants = vm.MaxParticipants;
             ev.CategoryId = vm.CategoryId;
+            ev.Latitude = vm.Latitude;
+            ev.Longitude = vm.Longitude;
 
             await _context.SaveChangesAsync();
 

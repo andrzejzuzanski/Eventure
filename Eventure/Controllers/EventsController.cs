@@ -62,6 +62,8 @@ namespace Eventure.Controllers
         public async Task<IActionResult> Create(EventCreateViewModel vm)
         {
             ModelState.Remove(nameof(vm.Categories));
+            ModelState.Remove(nameof(vm.Latitude));
+            ModelState.Remove(nameof(vm.Longitude));
 
             if (ModelState.IsValid)
             {
@@ -125,6 +127,8 @@ namespace Eventure.Controllers
                 Location = ev.Location,
                 MaxParticipants = ev.MaxParticipants,
                 CategoryId = ev.CategoryId,
+                Latitude = ev.Latitude,
+                Longitude = ev.Longitude,
                 Categories = await _eventService.GetCategorySelectListAsync()
             };
 
@@ -137,6 +141,9 @@ namespace Eventure.Controllers
         public async Task<IActionResult> Edit(int id, EventCreateViewModel vm)
         {
             ModelState.Remove(nameof(vm.Categories));
+            ModelState.Remove(nameof(vm.Latitude));
+            ModelState.Remove(nameof(vm.Longitude));
+
             if (!ModelState.IsValid)
             {
                 vm.Categories = await _eventService.GetCategorySelectListAsync();

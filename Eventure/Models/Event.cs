@@ -12,6 +12,8 @@ namespace Eventure.Models
         public DateTime EndDateTime { get; set; }
         public string? Location { get; set; }
         public int? MaxParticipants { get; set; }
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
 
         // Relations
         public string OrganizerId { get; set; }
