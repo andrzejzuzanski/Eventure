@@ -131,6 +131,18 @@ namespace Eventure.Services
                 .CreateAsync(eventsQuery.AsNoTracking(), pageNumber, pageSize);
         }
 
+        public async Task<List<Event>> GetRecommendedEventsAsync(int categoryId, int currentEventId)
+        {
+            return await _context.Events
+            .Where(e => e.CategoryId == categoryId &&
+                          e.Id != currentEventId &&
+                          e.StartDateTime > DateTime.UtcNow)
+            .OrderBy(e => e.StartDateTime)
+            .Take(5)
+            .AsNoTracking()
+            .ToListAsync();
+        }
+
         public async Task<MyEventsViewModel> GetUserEventsAsync(string userId)
         {
             var organizedEvents = await _context.Events

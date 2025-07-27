@@ -90,11 +90,14 @@ namespace Eventure.Controllers
                 comments = await _commentService.GetCommentsForEventAsync(id);
             }
 
+            var recommendedEvents = await _eventService.GetRecommendedEventsAsync(ev.CategoryId, ev.Id);
+
             var viewModel = new EventDetailsViewModel
             {
                 Event = ev,
                 RootComments = comments,
-                IsUserParticipant = isParticipant
+                IsUserParticipant = isParticipant,
+                RecommendedEvents = recommendedEvents
             };
 
             return View(viewModel);

@@ -35,5 +35,6 @@ namespace Eventure.Services
 
         Task<MyEventsViewModel> GetUserEventsAsync(string userId);
         Task<bool> DeleteEventAsAdminAsync(int id);
+        Task<List<Event>> GetRecommendedEventsAsync(int categoryId, int currentEventId);
     }
 }
