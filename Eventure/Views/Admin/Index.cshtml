@@ -1,0 +1,27 @@
+﻿@{
+    ViewData["Title"] = "Panel Administracyjny";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p>Witaj w panelu zarządzania aplikacją Eventure.</p>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Zarządzaj użytkownikami</h5>
+                <p class="card-text">Przeglądaj, blokuj i zarządzaj rolami użytkowników.</p>
+                <a asp-controller="Admin" asp-action="ManageUsers" class="btn btn-primary">Przejdź</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Zarządzaj wydarzeniami</h5>
+                <p class="card-text">Przeglądaj i usuwaj dowolne wydarzenie w systemie.</p>
+                <a asp-controller="Admin" asp-action="ManageEvents" class="btn btn-primary">Przejdź</a>
+            </div>
+        </div>
+    </div>
+</div>

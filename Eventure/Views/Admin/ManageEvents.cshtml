@@ -1,0 +1,70 @@
+﻿@using Eventure.Helpers
+@model PaginatedList<Eventure.Models.Event>
+
+@{
+    ViewData["Title"] = "Zarządzaj wydarzeniami";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form method="get" class="row mb-4 align-items-end">
+    <div class="col-md-3">
+        <input name="searchTitle" class="form-control" placeholder="Szukaj po tytule" value="@Context.Request.Query["searchTitle"]" />
+    </div>
+    <div class="col-md-3">
+        <input name="location" class="form-control" placeholder="Lokalizacja" value="@Context.Request.Query["location"]" />
+    </div>
+    <div class="col-md-3">
+        <select name="categoryId" class="form-select" asp-items="(IEnumerable<SelectListItem>)ViewBag.Categories"></select>
+    </div>
+    <div class="col-md-3">
+        <button type="submit" class="btn btn-primary w-100">Filtruj</button>
+    </div>
+</form>
+
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Tytuł</th>
+            <th>Organizator</th>
+            <th>Data rozpoczęcia</th>
+            <th>Akcje</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Title</td>
+                <td>@item.Organizer?.UserName</td>
+                <td>@item.StartDateTime.ToString("g")</td>
+                <td>
+                    <a asp-controller="Events" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info" target="_blank">Podgląd</a>
+                    
+                    <form asp-action="DeleteEvent" asp-route-id="@item.Id" method="post" class="d-inline" onsubmit="return confirm('Czy na pewno chcesz usunąć to wydarzenie? Nie można tego cofnąć!');">
+                        <button type="submit" class="btn btn-sm btn-danger">Usuń</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<nav aria-label="Nawigacja stron">
+    <ul class="pagination justify-content-center">
+        @if (Model.HasPreviousPage)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="ManageEvents" asp-route-pageNumber="@(Model.PageIndex - 1)" asp-route-searchTitle="@Context.Request.Query["searchTitle"]" asp-route-location="@Context.Request.Query["location"]" asp-route-categoryId="@Context.Request.Query["categoryId"]">« Poprzednia</a>
+            </li>
+        }
+        @if (Model.HasNextPage)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="ManageEvents" asp-route-pageNumber="@(Model.PageIndex + 1)" asp-route-searchTitle="@Context.Request.Query["searchTitle"]" asp-route-location="@Context.Request.Query["location"]" asp-route-categoryId="@Context.Request.Query["categoryId"]">Następna »</a>
+            </li>
+        }
+    </ul>
+</nav>
+
+<a asp-action="Index" class="btn btn-secondary mt-3">Powrót do panelu</a>

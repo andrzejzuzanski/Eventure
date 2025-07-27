@@ -15,16 +15,12 @@ namespace Eventure.Controllers
     [Authorize]
     public class EventsController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEventService _eventService;
         private readonly IUserContextService _userContextService;
         private readonly ICommentService _commentService;
 
-        public EventsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IEventService eventService, IUserContextService userContextService, ICommentService commentService)
+        public EventsController(IEventService eventService, IUserContextService userContextService, ICommentService commentService)
         {
-            _context = context;
-            _userManager = userManager;
             _eventService = eventService;
             _userContextService = userContextService;
             _commentService = commentService;
@@ -34,7 +30,7 @@ namespace Eventure.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index(string searchTitle, string location, DateTime? startDate, int? categoryId, int pageNumber = 1)
         {
-            int pageSize = 5;
+            int pageSize = 10;
 
             var paginated = await _eventService.GetFilteredEventsAsync(searchTitle, location, startDate, categoryId, pageNumber, pageSize);
 

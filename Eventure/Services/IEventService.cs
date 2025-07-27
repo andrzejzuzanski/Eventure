@@ -34,5 +34,6 @@ namespace Eventure.Services
         Task<(bool success, string message)> LeaveEventAsync(int eventId, string userId);
 
         Task<MyEventsViewModel> GetUserEventsAsync(string userId);
+        Task<bool> DeleteEventAsAdminAsync(int id);
     }
 }

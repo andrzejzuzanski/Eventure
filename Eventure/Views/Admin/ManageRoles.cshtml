@@ -1,0 +1,34 @@
+﻿@model Eventure.ViewModels.Admin.ManageUserRolesViewModel
+
+@{
+    ViewData["Title"] = $"Zarządzaj rolami dla {Model.UserName}";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form method="post" asp-action="ManageRoles">
+    <div class="card">
+        <div class="card-header">
+            Zaznacz role, które chcesz przypisać do użytkownika.
+        </div>
+        <div class="card-body">
+            <input type="hidden" asp-for="UserId" />
+
+            @for (int i = 0; i < Model.Roles.Count; i++)
+            {
+                <div class="form-check m-1">
+                    <input type="hidden" asp-for="Roles[i].RoleName" />
+
+                    <input asp-for="Roles[i].IsSelected" class="form-check-input" />
+                    <label class="form-check-label" asp-for="Roles[i].IsSelected">
+                        @Model.Roles[i].RoleName
+                    </label>
+                </div>
+            }
+        </div>
+        <div class="card-footer">
+            <button type="submit" class="btn btn-primary">Zapisz zmiany</button>
+            <a asp-action="ManageUsers" class="btn btn-secondary">Anuluj</a>
+        </div>
+    </div>
+</form>

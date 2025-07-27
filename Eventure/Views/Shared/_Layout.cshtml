@@ -35,6 +35,12 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Events" asp-action="MyEvents">Moje wydarzenia</a>
                         </li>
+                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-warning fw-bold" asp-controller="Admin" asp-action="Index">Panel Admina</a>
+                            </li>
+                        }
                         <li class="nav-item" id="notification-bell">
                             <a class="nav-link disabled" href="#">Ładowanie...</a>
                         </li>

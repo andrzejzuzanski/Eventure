@@ -46,6 +46,20 @@ namespace Eventure.Services
             return newEvent.Id;
         }
 
+        public async Task<bool> DeleteEventAsAdminAsync(int id)
+        {
+            var ev = await _context.Events.FindAsync(id);
+
+            if (ev == null)
+            {
+                return false;
+            }
+
+            _context.Events.Remove(ev);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<bool> DeleteEventAsync(int id, string userId)
         {
             var ev = await _context.Events.FindAsync(id);

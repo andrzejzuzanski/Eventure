@@ -1,0 +1,51 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Eventure.Models
+@inject UserManager<ApplicationUser> UserManager
+@model IEnumerable<Eventure.ViewModels.Admin.UserViewModel>
+
+@{
+    ViewData["Title"] = "Zarządzaj użytkownikami";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<table class="table table-striped table-bordered">
+    <thead class="thead-dark">
+        <tr>
+            <th>Nazwa użytkownika</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Akcje</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.UserName</td>
+                <td>@user.Email</td>
+                <td>@string.Join(", ", user.Roles)</td>
+                <td>
+                    <a asp-action="ManageRoles" asp-route-id="@user.Id" class="btn btn-sm btn-primary">Zarządzaj rolami</a>
+                    @if (user.Id != UserManager.GetUserId(User))
+                    {
+                        @if (user.IsLockedOut)
+                        {
+                            <form asp-action="UnlockUser" asp-route-id="@user.Id" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-success">Odblokuj</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="LockUser" asp-route-id="@user.Id" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-danger">Zablokuj</button>
+                            </form>
+                        }
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Index" class="btn btn-secondary">Powrót do panelu</a>
