@@ -22,7 +22,6 @@ namespace Eventure
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             builder.Services.Configure<RequestLocalizationOptions>(options =>
             {
@@ -32,7 +31,7 @@ namespace Eventure
             });
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => {
-                options.SignIn.RequireConfirmedAccount = false;
+                options.SignIn.RequireConfirmedAccount = true;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.AllowedForNewUsers = true;
@@ -48,6 +47,9 @@ namespace Eventure
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<INotificationService, NotificationService>();
             builder.Services.AddScoped<ICommentService, CommentService>();
+            builder.Services.Configure<Eventure.Settings.EmailSettings>(
+                builder.Configuration.GetSection("EmailSettings"));
+            builder.Services.AddScoped<IEmailService, EmailService>();
 
             var app = builder.Build();
 

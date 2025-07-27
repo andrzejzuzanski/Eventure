@@ -1,5 +1,4 @@
-﻿using AspNetCoreGeneratedDocument;
-using Eventure.Data;
+﻿using Eventure.Data;
 using Eventure.Helpers;
 using Eventure.Models;
 using Eventure.Services;
