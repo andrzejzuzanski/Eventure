@@ -1,0 +1,38 @@
+﻿@using Eventure.Models
+@using System.Security.Claims
+@model Conversation
+
+@{
+    var otherParticipant = Model.Participants.FirstOrDefault(p => p.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))?.User;
+    ViewData["Title"] = otherParticipant != null ? $"Rozmowa z {otherParticipant.UserName}" : "Konwersacja";
+}
+
+<h3>@ViewData["Title"]</h3>
+<a asp-action="Index" class="btn btn-secondary btn-sm mb-3">Wróć do listy rozmów</a>
+
+<div class="chat-container border rounded p-3 mb-3" style="height: 500px; overflow-y: scroll;">
+    @foreach (var message in Model.Messages.OrderBy(m => m.SentAt))
+    {
+        bool isCurrentUser = message.SenderId == User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var messageClass = isCurrentUser ? "text-end" : "text-start";
+        var senderName = isCurrentUser ? "Ty" : message.Sender.UserName;
+
+        <div class="mb-2 @messageClass">
+            <div class="d-inline-block p-2 rounded" style="background-color: @(isCurrentUser ? "#d1e7dd" : "#f8f9fa");">
+                <strong>@senderName:</strong>
+                <p class="mb-0">@message.Content</p>
+                <small class="text-muted" style="font-size: 0.75rem;">@message.SentAt.ToLocalTime().ToString("g")</small>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="message-form">
+    <form asp-action="SendMessage" method="post">
+        <input type="hidden" name="conversationId" value="@Model.Id" />
+        <div class="input-group">
+            <textarea name="content" class="form-control" rows="2" placeholder="Napisz wiadomość..."></textarea>
+            <button type="submit" class="btn btn-primary">Wyślij</button>
+        </div>
+    </form>
+</div>

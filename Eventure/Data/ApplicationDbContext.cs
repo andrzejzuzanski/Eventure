@@ -16,6 +16,9 @@ namespace Eventure.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<Conversation> Conversations { get; set; }
+        public DbSet<ConversationParticipant> ConversationParticipants { get; set; }
+        public DbSet<Message> Messages { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -91,6 +94,34 @@ namespace Eventure.Data
                   .WithMany(c => c.Replies)
                   .HasForeignKey(c => c.ParentCommentId)
                   .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            builder.Entity<ConversationParticipant>(eb =>
+            {
+                eb.HasKey(cp => new { cp.ConversationId, cp.UserId });
+                eb.HasOne(cp => cp.Conversation)
+                    .WithMany(c => c.Participants)
+                    .HasForeignKey(cp => cp.ConversationId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                eb.HasOne(cp => cp.User)
+                    .WithMany()
+                    .HasForeignKey(cp => cp.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<Message>(eb =>
+            {
+                eb.Property(m => m.Content).IsRequired();
+
+                eb.HasOne(m => m.Conversation)
+                    .WithMany(c => c.Messages)
+                    .HasForeignKey(m => m.ConversationId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                eb.HasOne(m => m.Sender)
+                    .WithMany()
+                    .HasForeignKey(m => m.SenderId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
         }
     }

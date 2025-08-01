@@ -1,0 +1,44 @@
+﻿@using Eventure.Models
+@using System.Security.Claims
+@model List<Conversation>
+
+@{
+    ViewData["Title"] = "Wiadomości";
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (!Model.Any())
+{
+    <p class="text-center">Nie masz jeszcze żadnych wiadomości.</p>
+}
+else
+{
+    <div class="list-group">
+        @foreach (var conversation in Model)
+        {
+            // Znajdź drugiego uczestnika konwersacji
+            var otherParticipant = conversation.Participants.FirstOrDefault(p => p.UserId != currentUserId)?.User;
+            var conversationTitle = otherParticipant != null ? otherParticipant.UserName : "Usunięty użytkownik";
+
+            <a asp-action="Conversation" asp-route-id="@conversation.Id" class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">Rozmowa z: @conversationTitle</h5>
+                    @if (conversation.Messages.Any())
+                    {
+                        <small>@conversation.Messages.Last().SentAt.ToString("g")</small>
+                    }
+                </div>
+                @if (conversation.Messages.Any())
+                {
+                    <p class="mb-1">@conversation.Messages.Last().Content</p>
+                }
+                else
+                {
+                    <p class="mb-1 fst-italic">Brak wiadomości w tej konwersacji.</p>
+                }
+            </a>
+        }
+    </div>
+}

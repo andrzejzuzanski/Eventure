@@ -50,6 +50,7 @@ namespace Eventure
             builder.Services.Configure<Eventure.Settings.EmailSettings>(
                 builder.Configuration.GetSection("EmailSettings"));
             builder.Services.AddScoped<IEmailService, EmailService>();
+            builder.Services.AddScoped<IMessageService, MessageService>();
 
             var app = builder.Build();
 

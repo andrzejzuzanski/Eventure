@@ -24,6 +24,15 @@
 
     <dt class="col-sm-3">Organizer</dt>
     <dd class="col-sm-9">@Model.Event.Organizer?.UserName</dd>
+    @if (User.Identity.IsAuthenticated && User.FindFirstValue(ClaimTypes.NameIdentifier) != Model.Event.OrganizerId)
+    {
+        <dt class="col-sm-3"></dt>
+        <dd class="col-sm-9">
+            <a asp-controller="Messages" asp-action="StartConversation" asp-route-recipientId="@Model.Event.OrganizerId" class="btn btn-sm btn-outline-primary">
+                Napisz wiadomość
+            </a>
+        </dd>
+    }
 
     <dt class="col-sm-3">Category</dt>
     <dd class="col-sm-9">@Model.Event.Category?.Name</dd>
