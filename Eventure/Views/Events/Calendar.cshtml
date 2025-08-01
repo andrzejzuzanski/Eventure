@@ -1,0 +1,35 @@
+﻿@{
+    ViewData["Title"] = "Kalendarz Wydarzeń";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p>Przeglądaj nadchodzące wydarzenia w widoku kalendarza.</p>
+
+<div id='calendar'></div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,listWeek'
+                },
+
+                events: '/Events/GetEventsForCalendar',
+
+                editable: false,
+                selectable: true,
+                dayMaxEvents: true,
+                locale: 'pl'
+            });
+
+            calendar.render();
+        });
+    </script>
+}

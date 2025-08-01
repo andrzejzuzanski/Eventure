@@ -17,12 +17,14 @@ namespace Eventure.Controllers
         private readonly IEventService _eventService;
         private readonly IUserContextService _userContextService;
         private readonly ICommentService _commentService;
+        private readonly ApplicationDbContext _context;
 
-        public EventsController(IEventService eventService, IUserContextService userContextService, ICommentService commentService)
+        public EventsController(IEventService eventService, IUserContextService userContextService, ICommentService commentService, ApplicationDbContext context)
         {
             _eventService = eventService;
             _userContextService = userContextService;
             _commentService = commentService;
+            _context = context;
         }
 
         // GET: Events 
@@ -236,6 +238,22 @@ namespace Eventure.Controllers
             return RedirectToAction(nameof(Details), new { id });
         }
 
+        [HttpGet]
+        public async Task<JsonResult> GetEventsForCalendar()
+        {
+            var events = await _context.Events
+                .Select(e => new
+                {
+                    title = e.Title,
+                    start = e.StartDateTime.ToString("yyyy-MM-ddTHH:mm:ss"),
+                    end = e.EndDateTime.ToString("yyyy-MM-ddTHH:mm:ss"),
+                    url = Url.Action("Details", "Events", new { id = e.Id })
+                })
+                .ToListAsync();
+
+            return Json(events);
+        }
+
         //GET Events/MyEvents
         public async Task<IActionResult> MyEvents()
         {
@@ -243,6 +261,10 @@ namespace Eventure.Controllers
             var vm = await _eventService.GetUserEventsAsync(user.Id);
 
             return View(vm);
+        }
+        public IActionResult Calendar()
+        {
+            return View();
         }
     }
 }
