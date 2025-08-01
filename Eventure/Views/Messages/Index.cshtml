@@ -18,11 +18,13 @@ else
     <div class="list-group">
         @foreach (var conversation in Model)
         {
-            // Znajdź drugiego uczestnika konwersacji
             var otherParticipant = conversation.Participants.FirstOrDefault(p => p.UserId != currentUserId)?.User;
             var conversationTitle = otherParticipant != null ? otherParticipant.UserName : "Usunięty użytkownik";
 
-            <a asp-action="Conversation" asp-route-id="@conversation.Id" class="list-group-item list-group-item-action">
+            bool hasUnread = conversation.Messages.Any(m => m.SenderId != currentUserId && !m.IsRead);
+            var itemClass = hasUnread ? "list-group-item-success" : "";
+
+            <a asp-action="Conversation" asp-route-id="@conversation.Id" class="list-group-item list-group-item-action @itemClass">
                 <div class="d-flex w-100 justify-content-between">
                     <h5 class="mb-1">Rozmowa z: @conversationTitle</h5>
                     @if (conversation.Messages.Any())

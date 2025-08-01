@@ -28,11 +28,89 @@
 </div>
 
 <div class="message-form">
-    <form asp-action="SendMessage" method="post">
+    <form id="sendMessageForm">
         <input type="hidden" name="conversationId" value="@Model.Id" />
         <div class="input-group">
-            <textarea name="content" class="form-control" rows="2" placeholder="Napisz wiadomość..."></textarea>
+            <textarea id="messageInput" name="content" class="form-control" rows="2" placeholder="Napisz wiadomość..."></textarea>
             <button type="submit" class="btn btn-primary">Wyślij</button>
         </div>
     </form>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const conversationId = "@Model.Id";
+            const currentUserId = "@User.FindFirstValue(ClaimTypes.NameIdentifier)";
+            const currentUserName = "@User.Identity.Name";
+
+            const chatContainer = document.querySelector(".chat-container");
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/chatHub")
+                .build();
+
+            connection.on("ReceiveMessage", function (message) {
+                const isCurrentUser = message.senderName === currentUserName;
+                appendMessage(message.content, message.senderName, message.sentAt, isCurrentUser);
+            });
+
+            connection.start().then(function () {
+                console.log("SignalR Connected.");
+                connection.invoke("JoinConversation", conversationId).catch(function (err) {
+                    return console.error(err.toString());
+                });
+            }).catch(function (err) {
+                return console.error(err.toString());
+            });
+
+            document.getElementById("sendMessageForm").addEventListener("submit", function (event) {
+                event.preventDefault();
+
+                const content = document.getElementById("messageInput").value;
+                if (content.trim() === "") {
+                    return;
+                }
+
+                fetch('/Messages/SendMessage', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value // Ważne dla [ValidateAntiForgeryToken]
+                    },
+                    body: `conversationId=${conversationId}&content=${encodeURIComponent(content)}`
+                }).then(response => {
+                    if (response.ok) {
+                        document.getElementById("messageInput").value = "";
+                    } else {
+                        console.error("Failed to send message.");
+                    }
+                }).catch(error => {
+                    console.error("Error sending message:", error);
+                });
+            });
+
+            function appendMessage(content, senderName, sentAt, isCurrentUser) {
+                const chatContainer = document.querySelector(".chat-container");
+
+                const messageClass = isCurrentUser ? "text-end" : "text-start";
+                const bgColor = isCurrentUser ? "#d1e7dd" : "#f8f9fa";
+                const finalSenderName = isCurrentUser ? "You" : senderName;
+
+                const messageDiv = document.createElement("div");
+                messageDiv.className = `mb-2 ${messageClass}`;
+
+                messageDiv.innerHTML = `
+                    <div class="d-inline-block p-2 rounded" style="background-color: ${bgColor};">
+                        <strong>${senderName}:</strong>
+                        <p class="mb-0">${content}</p>
+                        <small class="text-muted" style="font-size: 0.75rem;">${sentAt}</small>
+                    </div>`;
+
+                chatContainer.appendChild(messageDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+        });
+    </script>
+}

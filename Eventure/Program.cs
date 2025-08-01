@@ -42,6 +42,7 @@ namespace Eventure
                 .AddDefaultUI();
 
             builder.Services.AddControllersWithViews();
+            builder.Services.AddSignalR();
             builder.Services.AddScoped<IEventService, EventService>();
             builder.Services.AddScoped<IUserContextService, UserContextService>();
             builder.Services.AddHttpContextAccessor();
@@ -85,6 +86,7 @@ namespace Eventure
             app.UseRouting();
 
             app.UseAuthorization();
+            app.MapHub<Hubs.ChatHub>("/chathub");
 
             app.MapStaticAssets();
             app.MapControllerRoute(

@@ -10,5 +10,7 @@ namespace Eventure.Services
         Task<Conversation> GetConversationAsync(int conversationId, string userId);
         Task<Conversation> StartOrGetConversationAsync(string senderId, string recipientId);
         Task<Message> SendMessageAsync(int conversationId, string senderId, string content);
+        Task<int> GetUnreadMessagesCountAsync(string userId);
+        Task MarkMessagesAsReadAsync(int conversationId, string userId);
     }
 }

@@ -1,6 +1,8 @@
-﻿using Eventure.Services;
+﻿using Eventure.Hubs;
+using Eventure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
 
 namespace Eventure.Controllers
@@ -10,14 +12,15 @@ namespace Eventure.Controllers
     {
         private readonly IMessageService _messageService;
         private readonly IUserContextService _userContextService;
+        private readonly IHubContext<ChatHub> _hubContext;
 
-        public MessagesController(IMessageService messageService, IUserContextService userContextService)
+        public MessagesController(IMessageService messageService, IUserContextService userContextService, IHubContext<ChatHub> hubContext)
         {
             _messageService = messageService;
             _userContextService = userContextService;
+            _hubContext = hubContext;
         }
 
-        // Akcja wyświetlająca listę konwersacji (inbox)
         public async Task<IActionResult> Index()
         {
             var currentUser = await _userContextService.GetCurrentUserAsync();
@@ -25,19 +28,20 @@ namespace Eventure.Controllers
             return View(conversations);
         }
 
-        // Akcja wyświetlająca konkretną konwersację
         public async Task<IActionResult> Conversation(int id)
         {
             var currentUser = await _userContextService.GetCurrentUserAsync();
+
+            await _messageService.MarkMessagesAsReadAsync(id, currentUser.Id);
+
             var conversation = await _messageService.GetConversationAsync(id, currentUser.Id);
             if (conversation == null)
             {
-                return NotFound(); // Lub Forbid(), jeśli nie ma uprawnień
+                return NotFound();
             }
             return View(conversation);
         }
 
-        // Akcja POST do wysyłania wiadomości
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SendMessage(int conversationId, string content)
@@ -50,23 +54,43 @@ namespace Eventure.Controllers
             }
 
             var currentUser = await _userContextService.GetCurrentUserAsync();
-            await _messageService.SendMessageAsync(conversationId, currentUser.Id, content);
+            var newMessage = await _messageService.SendMessageAsync(conversationId, currentUser.Id, content);
 
-            return RedirectToAction(nameof(Conversation), new { id = conversationId });
+            await _hubContext.Clients
+                .Group(conversationId.ToString())
+                .SendAsync("ReceiveMessage", new
+                {
+                    content = newMessage.Content,
+                    senderName = currentUser.UserName,
+                    sentAt = newMessage.SentAt.ToString("g")
+                });
+
+            return Ok();
         }
 
-        // Akcja do rozpoczynania konwersacji (np. z profilu innego użytkownika)
         public async Task<IActionResult> StartConversation(string recipientId)
         {
             var currentUser = await _userContextService.GetCurrentUserAsync();
             if (currentUser.Id == recipientId)
             {
-                // Nie można pisać do samego siebie
-                return RedirectToAction("Index", "Events"); // Przekieruj gdzieś indziej
+                return RedirectToAction("Index", "Events");
             }
 
             var conversation = await _messageService.StartOrGetConversationAsync(currentUser.Id, recipientId);
             return RedirectToAction(nameof(Conversation), new { id = conversation.Id });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> UnreadCount()
+        {
+            var user = await _userContextService.GetCurrentUserAsync();
+            if (user == null)
+            {
+                return NoContent();
+            }
+
+            var unreadCount = await _messageService.GetUnreadMessagesCountAsync(user.Id);
+            return PartialView("_MessageBadge", unreadCount);
         }
     }
 }

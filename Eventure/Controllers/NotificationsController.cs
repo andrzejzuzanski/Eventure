@@ -36,7 +36,6 @@ namespace Eventure.Controllers
 
             if (user == null)
             {
-                //return PartialView("_NotificationBell", 0
                 return NoContent();
             }
             var unread = await _notificationService.GetUnreadAsync(user.Id);

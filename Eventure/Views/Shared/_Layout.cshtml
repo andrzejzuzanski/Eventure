@@ -29,24 +29,28 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Events" asp-action="Index">Events</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Events" asp-action="Create">Create</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Events" asp-action="MyEvents">Moje wydarzenia</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Messages" asp-action="Index">Wiadomości</a>
-                        </li>
-                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-warning fw-bold" asp-controller="Admin" asp-action="Index">Panel Admina</a>
+                                <a class="nav-link text-dark" asp-controller="Events" asp-action="Create">Create</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Events" asp-action="MyEvents">Moje wydarzenia</a>
+                            </li>
+
+                            @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-warning fw-bold" asp-controller="Admin" asp-action="Index">Panel Admina</a>
+                                </li>
+                            }
+                            <li class="nav-item" id="messages-badge">
+                                <a class="nav-link disabled" href="#">Ładowanie...</a>
+                            </li>
+                            <li class="nav-item" id="notification-bell">
+                                <a class="nav-link disabled" href="#">Ładowanie...</a>
                             </li>
                         }
-                        <li class="nav-item" id="notification-bell">
-                            <a class="nav-link disabled" href="#">Ładowanie...</a>
-                        </li>
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>
@@ -74,9 +78,10 @@
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/9.0.6/signalr.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-        <script>
+    <script>
             document.addEventListener("DOMContentLoaded", function () {
                 fetch('/Notifications/UnreadCount')
                     .then(response => response.text())
@@ -84,7 +89,16 @@
                         document.getElementById("notification-bell").innerHTML = html;
                     });
             });
-        </script>
+
+            document.addEventListener("DOMContentLoaded", function () {
+                fetch('/Messages/UnreadCount')
+                    .then(response => response.text())
+                    .then(html => {
+                        const badgeElement = document.getElementById("messages-badge");
+                        if(badgeElement) badgeElement.innerHTML = html;
+                });
+        });
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
