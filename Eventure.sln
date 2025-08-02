@@ -5,6 +5,8 @@ VisualStudioVersion = 17.14.36301.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eventure", "Eventure\Eventure.csproj", "{2B80BE41-D346-420F-B18C-9FE725959E3C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eventure.Tests", "Eventure.Tests\Eventure.Tests.csproj", "{A95DB857-ABCB-45D6-8272-4A80A6995068}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{2B80BE41-D346-420F-B18C-9FE725959E3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B80BE41-D346-420F-B18C-9FE725959E3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B80BE41-D346-420F-B18C-9FE725959E3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A95DB857-ABCB-45D6-8272-4A80A6995068}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A95DB857-ABCB-45D6-8272-4A80A6995068}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A95DB857-ABCB-45D6-8272-4A80A6995068}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A95DB857-ABCB-45D6-8272-4A80A6995068}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
