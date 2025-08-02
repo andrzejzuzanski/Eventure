@@ -20,7 +20,7 @@ public static class DbInitializer
             await roleManager.CreateAsync(new IdentityRole(userRole));
         }
 
-        string adminEmail = "admin@eventure.com";
+        string adminEmail = "demo@eventure.com";
         string adminPassword = "SuperSecretPassword123!";
 
         if (await userManager.FindByEmailAsync(adminEmail) == null)

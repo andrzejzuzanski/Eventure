@@ -7,10 +7,11 @@ namespace Eventure.Services
     public class CommentService : ICommentService
     {
         private readonly ApplicationDbContext _context;
-
-        public CommentService(ApplicationDbContext context)
+        private readonly INotificationService _notificationService;
+        public CommentService(ApplicationDbContext context, INotificationService notificationService)
         {
             _context = context;
+            _notificationService = notificationService;
         }
 
         public async Task AddCommentAsync(int eventId, string userId, string content, int? parentCommentId)
@@ -26,6 +27,33 @@ namespace Eventure.Services
 
             _context.Comments.Add(newComment);
             await _context.SaveChangesAsync();
+
+            var relevantEvent = await _context.Events
+            .Include(e => e.Organizer)
+            .FirstOrDefaultAsync(e => e.Id == eventId);
+
+            if (relevantEvent == null) return;
+
+            if (parentCommentId == null)
+            {
+                if (relevantEvent.OrganizerId != userId)
+                {
+                    var message = $"Użytkownik {newComment.User?.UserName ?? "ktoś"} dodał nowy komentarz do Twojego wydarzenia: '{relevantEvent.Title}'.";
+                    await _notificationService.AddNotificationAsync(relevantEvent.OrganizerId, message, eventId);
+                }
+            }
+            else
+            {
+                var parentComment = await _context.Comments
+                    .Include(c => c.User)
+                    .FirstOrDefaultAsync(c => c.Id == parentCommentId);
+
+                if (parentComment != null && parentComment.UserId != userId)
+                {
+                    var message = $"Użytkownik {newComment.User?.UserName ?? "ktoś"} odpowiedział na Twój komentarz w wydarzeniu: '{relevantEvent.Title}'.";
+                    await _notificationService.AddNotificationAsync(parentComment.UserId, message, eventId);
+                }
+            }
         }
 
         public async Task<List<Comment>> GetCommentsForEventAsync(int eventId)

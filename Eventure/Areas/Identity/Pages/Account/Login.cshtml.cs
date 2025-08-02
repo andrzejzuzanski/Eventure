@@ -152,13 +152,31 @@ namespace Eventure.Areas.Identity.Pages.Account
         }
         public async Task<IActionResult> OnPostLoginDemoAsync()
         {
-            var result = await _signInManager.PasswordSignInAsync("demo@eventure.com", "Demo123!", true, lockoutOnFailure: false);
+            var demoEmail = "demo@eventure.com";
+            var demoPassword = "SuperSecretPassword123!";
+
+            // Krok 1: Znajdź użytkownika po jego e-mailu
+            var user = await _userManager.FindByEmailAsync(demoEmail);
+
+            // Krok 2: Sprawdź, czy użytkownik istnieje
+            if (user == null)
+            {
+                TempData["Message"] = "Konto demo nie zostało znalezione w bazie danych.";
+                TempData["MessageType"] = "danger";
+                return RedirectToPage();
+            }
+
+            // Krok 3: Użyj znalezionego użytkownika (i jego UserName) do zalogowania
+            var result = await _signInManager.PasswordSignInAsync(user, demoPassword, isPersistent: true, lockoutOnFailure: false);
 
             if (result.Succeeded)
+            {
                 return LocalRedirect(Url.Content("~/Events"));
+            }
 
-            ModelState.AddModelError(string.Empty, "Nie udało się zalogować na konto demo.");
-            return Page();
+            TempData["Message"] = "Nie udało się zalogować na konto demo. Sprawdź, czy hasło się zgadza i konto nie jest zablokowane.";
+            TempData["MessageType"] = "danger";
+            return RedirectToPage();
         }
     }
 }
