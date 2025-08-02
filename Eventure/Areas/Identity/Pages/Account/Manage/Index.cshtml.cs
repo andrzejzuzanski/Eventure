@@ -35,7 +35,6 @@ namespace Eventure.Areas.Identity.Pages.Account.Manage
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public string Username { get; set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -61,15 +60,20 @@ namespace Eventure.Areas.Identity.Pages.Account.Manage
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
+            [Required]
+            //[RegularExpression(@"^[a-zA-Z0-9_.-]*$", ErrorMessage = "Username cannot contain spaces")]
+            [Display(Name = "Username")]
+            public string UserName { get; set; }
+
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
 
-            [Display(Name = "Zdjęcie profilowe (Avatar)")]
+            [Display(Name = "Profile photo (Avatar)")]
             public IFormFile ProfilePicture { get; set; }
         }
 
-        [Display(Name = "Obecne zdjęcie profilowe")]
+        [Display(Name = "Current profile photo")]
         public string CurrentProfilePictureUrl { get; set; }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -77,11 +81,11 @@ namespace Eventure.Areas.Identity.Pages.Account.Manage
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
-            Username = userName;
             CurrentProfilePictureUrl = user.ProfilePictureUrl;
 
             Input = new InputModel
             {
+                UserName = userName,
                 PhoneNumber = phoneNumber
             };
         }
@@ -128,6 +132,18 @@ namespace Eventure.Areas.Identity.Pages.Account.Manage
                 }
 
                 user.ProfilePictureUrl = $"/uploads/avatars/{fileName}";
+            }
+
+            var userName = await _userManager.GetUserNameAsync(user);
+            if (Input.UserName != userName)
+            {
+                var setUserNameResult = await _userManager.SetUserNameAsync(user, Input.UserName);
+                if (!setUserNameResult.Succeeded)
+                {
+                    // Obsługa błędu, np. jeśli nowa nazwa jest już zajęta
+                    StatusMessage = "Error: This username is already used";
+                    return RedirectToPage();
+                }
             }
 
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
