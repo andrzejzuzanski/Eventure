@@ -153,6 +153,7 @@ namespace Eventure.Tests
             var organizerId = "organizer-123";
             var participantId = "participant-456";
             var eventId = 1;
+            var imageUrl = "http://example.com/image.jpg";
 
             var eventToUpdate = new Event
             {
@@ -183,7 +184,7 @@ namespace Eventure.Tests
                 EndDateTime = eventToUpdate.EndDateTime,
             };
 
-            await eventService.UpdateEventAsync(eventId, updateVm, organizerId);
+            await eventService.UpdateEventAsync(eventId, updateVm, organizerId, imageUrl);
 
             mockNotificationService.Verify (s => s.AddNotificationAsync(participantId, It.IsAny<string>(), eventId),Times.Once);
         }

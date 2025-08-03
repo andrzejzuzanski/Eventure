@@ -58,11 +58,11 @@ namespace Eventure.Data
                 .HasMaxLength(50);
 
                 eb.HasData(
-                        new Category { Id = 1, Name = "Biznes" },
-                        new Category { Id = 2, Name = "Sport" },
-                        new Category { Id = 3, Name = "Kultura" },
-                        new Category { Id = 4, Name = "Technologia" },
-                        new Category { Id = 5, Name = "Edukacja" }
+                        new Category { Id = 1, Name = "Bussiness", DefaultImageUrl = "/uploads/categories/bussiness.jpg" },
+                        new Category { Id = 2, Name = "Sport", DefaultImageUrl = "/uploads/categories/sport.jpg" },
+                        new Category { Id = 3, Name = "Culture", DefaultImageUrl = "/uploads/categories/culture.jpg" },
+                        new Category { Id = 4, Name = "Technology", DefaultImageUrl = "/uploads/categories/technology.jpg" },
+                        new Category { Id = 5, Name = "Education", DefaultImageUrl = "/uploads/categories/education.jpg" }
                     );
             });
 
@@ -78,7 +78,7 @@ namespace Eventure.Data
                 .WithMany()
                 .HasForeignKey(n => n.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
-                
+
                 eb.HasOne(n => n.Event)
                 .WithMany()
                 .HasForeignKey(n => n.EventId)

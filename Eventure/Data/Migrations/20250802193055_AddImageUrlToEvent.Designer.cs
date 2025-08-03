@@ -4,6 +4,7 @@ using Eventure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Eventure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250802193055_AddImageUrlToEvent")]
+    partial class AddImageUrlToEvent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -98,10 +101,6 @@ namespace Eventure.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("DefaultImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -115,32 +114,27 @@ namespace Eventure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            DefaultImageUrl = "/uploads/categories/bussiness.jpg",
-                            Name = "Bussiness"
+                            Name = "Biznes"
                         },
                         new
                         {
                             Id = 2,
-                            DefaultImageUrl = "/uploads/categories/sport.jpg",
                             Name = "Sport"
                         },
                         new
                         {
                             Id = 3,
-                            DefaultImageUrl = "/uploads/categories/culture.jpg",
-                            Name = "Culture"
+                            Name = "Kultura"
                         },
                         new
                         {
                             Id = 4,
-                            DefaultImageUrl = "/uploads/categories/technology.jpg",
-                            Name = "Technology"
+                            Name = "Technologia"
                         },
                         new
                         {
                             Id = 5,
-                            DefaultImageUrl = "/uploads/categories/education.jpg",
-                            Name = "Education"
+                            Name = "Edukacja"
                         });
                 });
 

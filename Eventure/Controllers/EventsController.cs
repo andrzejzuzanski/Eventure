@@ -4,6 +4,7 @@ using Eventure.Models;
 using Eventure.Services;
 using Eventure.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -18,13 +19,15 @@ namespace Eventure.Controllers
         private readonly IUserContextService _userContextService;
         private readonly ICommentService _commentService;
         private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public EventsController(IEventService eventService, IUserContextService userContextService, ICommentService commentService, ApplicationDbContext context)
+        public EventsController(IEventService eventService, IUserContextService userContextService, ICommentService commentService, ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
         {
             _eventService = eventService;
             _userContextService = userContextService;
             _commentService = commentService;
             _context = context;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // GET: Events 
@@ -61,12 +64,27 @@ namespace Eventure.Controllers
             ModelState.Remove(nameof(vm.Categories));
             ModelState.Remove(nameof(vm.Latitude));
             ModelState.Remove(nameof(vm.Longitude));
+            ModelState.Remove(nameof(vm.EventImage));
 
             if (ModelState.IsValid)
             {
                 var user = await _userContextService.GetCurrentUserAsync();
 
-                await _eventService.CreateEventAsync(vm, user.Id);
+                string imageUrl = null;
+                if (vm.EventImage != null)
+                {
+                    string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "events");
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + vm.EventImage.FileName;
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                    Directory.CreateDirectory(uploadsFolder);
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await vm.EventImage.CopyToAsync(fileStream);
+                    }
+                    imageUrl = "/uploads/events/" + uniqueFileName;
+                }
+
+                await _eventService.CreateEventAsync(vm, user.Id, imageUrl);
 
                 TempData["Message"] = "Wydarzenie zostało utworzone.";
                 TempData["MessageType"] = "success";
@@ -143,6 +161,7 @@ namespace Eventure.Controllers
             ModelState.Remove(nameof(vm.Categories));
             ModelState.Remove(nameof(vm.Latitude));
             ModelState.Remove(nameof(vm.Longitude));
+            ModelState.Remove(nameof(vm.EventImage));
 
             if (!ModelState.IsValid)
             {
@@ -152,7 +171,21 @@ namespace Eventure.Controllers
 
             var user = await _userContextService.GetCurrentUserAsync();
 
-            var isSuccess = await _eventService.UpdateEventAsync(id, vm, user.Id);
+            string imageUrl = null;
+            if (vm.EventImage != null)
+            {
+                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "events");
+                string uniqueFileName = Guid.NewGuid().ToString() + "_" + vm.EventImage.FileName;
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                Directory.CreateDirectory(uploadsFolder);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await vm.EventImage.CopyToAsync(fileStream);
+                }
+                imageUrl = "/uploads/events/" + uniqueFileName;
+            }
+
+            var isSuccess = await _eventService.UpdateEventAsync(id, vm, user.Id, imageUrl);
 
             if(!isSuccess)
                 return NotFound();

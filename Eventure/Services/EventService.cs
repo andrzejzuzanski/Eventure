@@ -24,7 +24,7 @@ namespace Eventure.Services
             return ev != null && ev.OrganizerId == userId;
         }
 
-        public async Task<int> CreateEventAsync(EventCreateViewModel vm, string organizerId)
+        public async Task<int> CreateEventAsync(EventCreateViewModel vm, string organizerId, string imageUrl)
         {
             var newEvent = new Event
             {
@@ -37,8 +37,18 @@ namespace Eventure.Services
                 OrganizerId = organizerId,
                 CategoryId = vm.CategoryId,
                 Latitude = vm.Latitude,
-                Longitude = vm.Longitude
+                Longitude = vm.Longitude,
+                ImageUrl = imageUrl
             };
+
+            if (string.IsNullOrEmpty(newEvent.ImageUrl))
+            {
+                var category = await _context.Categories.FindAsync(vm.CategoryId);
+                if (category != null)
+                {
+                    newEvent.ImageUrl = category.DefaultImageUrl;
+                }
+            }
 
             _context.Add(newEvent);
             await _context.SaveChangesAsync();
@@ -209,7 +219,7 @@ namespace Eventure.Services
             return (true, "Pomyślnie opuściłeś wydarzenie.");
         }
 
-        public async Task<bool> UpdateEventAsync(int id, EventCreateViewModel vm, string userId)
+        public async Task<bool> UpdateEventAsync(int id, EventCreateViewModel vm, string userId, string imageUrl)
         {
             var ev = await _context.Events
                 .Include(e => e.Participants)
@@ -242,6 +252,16 @@ namespace Eventure.Services
             ev.CategoryId = vm.CategoryId;
             ev.Latitude = vm.Latitude;
             ev.Longitude = vm.Longitude;
+            ev.ImageUrl = imageUrl;
+
+            if (string.IsNullOrEmpty(ev.ImageUrl))
+            {
+                var category = await _context.Categories.FindAsync(vm.CategoryId);
+                if (category != null)
+                {
+                    ev.ImageUrl = category.DefaultImageUrl;
+                }
+            }
 
             await _context.SaveChangesAsync();
 

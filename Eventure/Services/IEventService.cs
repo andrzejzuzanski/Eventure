@@ -21,9 +21,9 @@ namespace Eventure.Services
 
         Task<Event?> GetEventWithDetailsAsync(int id);
 
-        Task<int> CreateEventAsync(EventCreateViewModel vm, string organizerId);
+        Task<int> CreateEventAsync(EventCreateViewModel vm, string organizerId, string imageUrl);
 
-        Task<bool> UpdateEventAsync(int id, EventCreateViewModel vm, string userId);
+        Task<bool> UpdateEventAsync(int id, EventCreateViewModel vm, string userId, string imageUrl);
 
         Task<bool> DeleteEventAsync(int id, string userId);
 

@@ -32,6 +32,10 @@ namespace Eventure.ViewModels
         public int? MaxParticipants { get; set; }
         [Display(Name = "Kategoria")]
         public int CategoryId { get; set; }
+
+        [Display(Name = "Zdjęcie wydarzenia")]
+        public IFormFile EventImage { get; set; }
+
         [BindNever]
         public List<SelectListItem> Categories { get; set; }
 

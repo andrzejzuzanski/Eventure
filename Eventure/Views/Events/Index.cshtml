@@ -2,95 +2,449 @@
 @model PaginatedList<Eventure.Models.Event>
 
 @{
-    ViewData["Title"] = "All Events";
+    ViewData["Title"] = "Nadchodzące Wydarzenia";
 }
 
-
-<form method="get" class="row mb-4 align-items-end">
-    <div class="col-md-3">
-        <input name="searchTitle" class="form-control" placeholder="Szukaj po tytule" value="@Context.Request.Query["searchTitle"]" />
-    </div>
-    <div class="col-md-2">
-        <input name="location" class="form-control" placeholder="Lokalizacja" value="@Context.Request.Query["location"]" />
-    </div>
-    <div class="col-md-2">
-        <input name="startDate" type="date" class="form-control" value="@Context.Request.Query["startDate"]" />
-    </div>
-    <div class="col-md-3">
-        <select name="categoryId" class="form-select"
-                asp-items="(IEnumerable<SelectListItem>)ViewBag.Categories">
-        </select>
-    </div>
-    <div class="col-md-2">
-        <button type="submit" class="btn btn-primary w-100">Filtruj</button>
-    </div>
-</form>
-
-<h2>All Events</h2>
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Start</th>
-            <th>End</th>
-            <th>Organizer</th>
-            <th>Details</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Title</td>
-                <td>@item.StartDateTime.ToString("g")</td>
-                <td>@item.EndDateTime.ToString("g")</td>
-                <td>@item.Organizer?.UserName</td>
-                <td><a asp-action="Details" asp-route-id="@item.Id">@item.Title</a></td>
-            </tr>
+<style>
+    /* Elegant minimal animations */
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
         }
-    </tbody>
-</table>
 
-<nav aria-label="Nawigacja stron">
-    <ul class="pagination justify-content-center">
-        @if (Model.HasPreviousPage)
-        {
-            <li class="page-item">
-                <a class="page-link" asp-action="Index"
-                   asp-route-pageNumber="@(Model.PageIndex - 1)"
-                   asp-route-searchTitle="@Context.Request.Query["searchTitle"]"
-                   asp-route-location="@Context.Request.Query["location"]"
-                   asp-route-startDate="@Context.Request.Query["startDate"]"
-                   asp-route-categoryId="@Context.Request.Query["categoryId"]">
-                    &laquo; Poprzednia
-                </a>
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    * {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .hero-section {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 3rem 0;
+        margin-bottom: 2rem;
+        animation: slideDown 0.8s ease-out;
+    }
+
+    .hero-title {
+        font-weight: 300;
+        letter-spacing: -0.5px;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+
+    .hero-subtitle {
+        color: #7f8c8d;
+        font-weight: 300;
+        font-size: 1.1rem;
+    }
+
+    .filter-form {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 3rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        animation: fadeIn 0.8s ease-out 0.2s both;
+    }
+
+    .form-control, .form-select {
+        border: 1px solid #e1e8ed;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        background: rgba(255, 255, 255, 0.8);
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            background: white;
+            outline: none;
+        }
+
+    .btn-primary {
+        background: #3498db;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.3);
+        }
+
+    .btn-secondary {
+        background: #95a5a6;
+        border: none;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+            transform: translateY(-1px);
+        }
+
+    .event-card {
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.4s ease;
+        animation: fadeIn 0.6s ease-out;
+        animation-fill-mode: both;
+        backdrop-filter: blur(10px);
+    }
+
+        .event-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border-color: rgba(52, 152, 219, 0.2);
+        }
+
+    .card-img-top {
+        transition: transform 0.6s ease;
+        filter: brightness(0.95);
+    }
+
+    .event-card:hover .card-img-top {
+        transform: scale(1.05);
+        filter: brightness(1);
+    }
+
+    .card-title {
+        color: #2c3e50;
+        font-weight: 600;
+        font-size: 1.1rem;
+        line-height: 1.4;
+    }
+
+    .card-text {
+        color: #7f8c8d;
+        line-height: 1.6;
+        font-size: 0.9rem;
+    }
+
+    .card-footer {
+        background: rgba(248, 249, 250, 0.8);
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+
+    .pagination {
+        margin-top: 3rem;
+    }
+
+    .page-link {
+        border: 1px solid #e1e8ed;
+        border-radius: 8px;
+        margin: 0 4px;
+        padding: 0.75rem 1rem;
+        color: #495057;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+    }
+
+        .page-link:hover {
+            background: #3498db;
+            border-color: #3498db;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    .page-item.active .page-link {
+        background: #3498db;
+        border-color: #3498db;
+        color: white;
+    }
+
+    .empty-state {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        border-radius: 16px;
+        padding: 4rem 2rem;
+        text-align: center;
+        animation: fadeIn 0.8s ease-out;
+    }
+
+        .empty-state h3 {
+            color: #2c3e50;
+            font-weight: 300;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state p {
+            color: #7f8c8d;
+            margin-bottom: 2rem;
+        }
+
+    .create-btn {
+        background: #e74c3c;
+        border: none;
+        border-radius: 8px;
+        padding: 1rem 2rem;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        margin-top: 2rem;
+        transition: all 0.3s ease;
+    }
+
+        .create-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
+        }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+        .info-item i {
+            margin-right: 0.5rem;
+            color: #3498db;
+            width: 16px;
+        }
+
+    /* Staggered animation delays */
+    .event-card:nth-child(1) {
+        animation-delay: 0.1s;
+    }
+
+    .event-card:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .event-card:nth-child(3) {
+        animation-delay: 0.3s;
+    }
+
+    .event-card:nth-child(4) {
+        animation-delay: 0.4s;
+    }
+
+    .event-card:nth-child(5) {
+        animation-delay: 0.5s;
+    }
+
+    .event-card:nth-child(6) {
+        animation-delay: 0.6s;
+    }
+
+    /* Subtle accent line */
+    .accent-line {
+        width: 60px;
+        height: 3px;
+        background: #3498db;
+        margin: 0 auto 2rem;
+        border-radius: 2px;
+    }
+</style>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="text-center">
+            <h1 class="hero-title display-4">Odkryj Wydarzenia</h1>
+            <div class="accent-line"></div>
+            <p class="hero-subtitle">Znajdź inspirujące spotkania, warsztaty i konferencje w Twojej okolicy</p>
+        </div>
+    </div>
+</section>
+
+<div class="container">
+    <!-- Formularz filtrowania -->
+    <form method="get" class="filter-form">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <input name="searchTitle" class="form-control" placeholder="Szukaj po tytule..." value="@Context.Request.Query["searchTitle"]" />
+            </div>
+            <div class="col-md-2">
+                <input name="location" class="form-control" placeholder="Lokalizacja..." value="@Context.Request.Query["location"]" />
+            </div>
+            <div class="col-md-2">
+                <input name="startDate" type="date" class="form-control" value="@Context.Request.Query["startDate"]" />
+            </div>
+            <div class="col-md-3">
+                <select name="categoryId" class="form-select" asp-items="(IEnumerable<SelectListItem>)ViewBag.Categories">
+                    <option value="">Wszystkie kategorie</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Filtruj</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Siatka z kartami wydarzeń -->
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <i class="bi bi-calendar-x display-1 text-muted mb-3"></i>
+            <h3>Nie znaleziono wydarzeń</h3>
+            <p>Spróbuj zmienić filtry lub sprawdź ponownie później</p>
+            <a asp-action="Index" class="btn btn-secondary">Wyczyść filtry</a>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+            @foreach (var item in Model)
+            {
+                <div class="col">
+                    <div class="card event-card h-100">
+                        <div class="position-relative overflow-hidden">
+                            <a asp-action="Details" asp-route-id="@item.Id">
+                                <img src="@(item.ImageUrl ?? "/uploads/events/default-event.png")"
+                                     class="card-img-top"
+                                     alt="@item.Title"
+                                     style="height: 200px; object-fit: cover;">
+                            </a>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title mb-3">@item.Title</h5>
+                            <p class="card-text flex-grow-1 mb-3">
+                                @(item.Description != null && item.Description.Length > 100 ? item.Description.Substring(0, 100) + "..." : item.Description)
+                            </p>
+                            <div class="mt-auto">
+                                <div class="info-item">
+                                    <i class="bi bi-calendar-event"></i>
+                                    <span>@item.StartDateTime.ToString("dd MMMM yyyy, HH:mm")</span>
+                                </div>
+                                <div class="info-item mb-3">
+                                    <i class="bi bi-geo-alt"></i>
+                                    <span>@(item.Location ?? "Online")</span>
+                                </div>
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary w-100">
+                                    Zobacz szczegóły
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-person-circle me-2"></i>
+                                <span>@item.Organizer?.UserName</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Paginacja -->
+    <nav aria-label="Nawigacja stron">
+        <ul class="pagination justify-content-center">
+            @if (Model.HasPreviousPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-action="Index"
+                       asp-route-pageNumber="@(Model.PageIndex - 1)"
+                       asp-route-searchTitle="@Context.Request.Query["searchTitle"]"
+                       asp-route-location="@Context.Request.Query["location"]"
+                       asp-route-startDate="@Context.Request.Query["startDate"]"
+                       asp-route-categoryId="@Context.Request.Query["categoryId"]">
+                        Poprzednia
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">Poprzednia</span>
+                </li>
+            }
+
+            <li class="page-item active">
+                <span class="page-link">@Model.PageIndex</span>
             </li>
-        }
-        else
-        {
-            <li class="page-item disabled"><span class="page-link">&laquo; Poprzednia</span></li>
-        }
 
-        <li class="page-item active"><span class="page-link">@Model.PageIndex</span></li>
+            @if (Model.HasNextPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-action="Index"
+                       asp-route-pageNumber="@(Model.PageIndex + 1)"
+                       asp-route-searchTitle="@Context.Request.Query["searchTitle"]"
+                       asp-route-location="@Context.Request.Query["location"]"
+                       asp-route-startDate="@Context.Request.Query["startDate"]"
+                       asp-route-categoryId="@Context.Request.Query["categoryId"]">
+                        Następna
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">Następna</span>
+                </li>
+            }
+        </ul>
+    </nav>
 
-        @if (Model.HasNextPage)
-        {
-            <li class="page-item">
-                <a class="page-link" asp-action="Index"
-                   asp-route-pageNumber="@(Model.PageIndex + 1)"
-                   asp-route-searchTitle="@Context.Request.Query["searchTitle"]"
-                   asp-route-location="@Context.Request.Query["location"]"
-                   asp-route-startDate="@Context.Request.Query["startDate"]"
-                   asp-route-categoryId="@Context.Request.Query["categoryId"]">
-                    Następna &raquo;
-                </a>
-            </li>
-        }
-        else
-        {
-            <li class="page-item disabled"><span class="page-link">Następna &raquo;</span></li>
-        }
-    </ul>
-</nav>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div class="text-center mb-5">
+            <a class="btn create-btn" asp-action="Create">
+                Stwórz Nowe Wydarzenie
+            </a>
+        </div>
+    }
+</div>
 
-<a class="btn btn-primary" asp-action="Create">Create New Event</a>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Smooth scroll behavior
+        document.documentElement.style.scrollBehavior = 'smooth';
+
+        // Enhanced focus states
+        const inputs = document.querySelectorAll('.form-control, .form-select');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.style.transform = 'translateY(-1px)';
+            });
+
+            input.addEventListener('blur', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    });
+</script>
