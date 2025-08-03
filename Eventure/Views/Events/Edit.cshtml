@@ -4,54 +4,90 @@
     ViewData["Title"] = "Edit Event";
 }
 
-<h2>Edit Event</h2>
+<link rel="stylesheet" href="~/css/events/Edit.css" />
 
-<form asp-action="Edit" asp-route-id="@Context.Request.RouteValues["id"]" method="post" enctype="multipart/form-data">
-    <div class="mb-3">
-        <label asp-for="Title" class="form-label"></label>
-        <input asp-for="Title" class="form-control" />
-        <span asp-validation-for="Title" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Description" class="form-label"></label>
-        <textarea asp-for="Description" class="form-control"></textarea>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Location" class="form-label"></label>
-        <div class="input-group">
-            <input asp-for="Location" class="form-control" />
-            <button class="btn btn-outline-secondary" type="button" id="geocode-button">Znajdź na mapie</button>
+<div class="edit-container">
+    <div class="form-card">
+        <div class="form-header">
+            <h1 class="form-title">Edytuj Wydarzenie</h1>
+            <div class="accent-line"></div>
+            <p class="form-subtitle">Zaktualizuj szczegóły swojego wydarzenia</p>
         </div>
-    </div>
 
-    <div id="form-map" style="height: 300px; width: 100%;" class="border rounded mb-3"></div>
+        <form asp-action="Edit" asp-route-id="@Context.Request.RouteValues["id"]" method="post" enctype="multipart/form-data">
+            <div class="form-section">
+                <label asp-for="Title" class="form-label">Tytuł wydarzenia</label>
+                <input asp-for="Title" class="form-control" placeholder="Wprowadź nazwę wydarzenia..." />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
 
-    <input asp-for="Latitude" type="hidden" />
-    <input asp-for="Longitude" type="hidden" />
-    <div class="mb-3">
-        <label asp-for="StartDateTime" class="form-label"></label>
-        <input asp-for="StartDateTime" type="datetime-local" class="form-control" />
+            <div class="form-section">
+                <label asp-for="Description" class="form-label">Opis</label>
+                <textarea asp-for="Description" class="form-control" placeholder="Opisz szczegóły wydarzenia, program, co uczestników czeka..."></textarea>
+            </div>
+
+            <div class="form-section">
+                <label asp-for="Location" class="form-label">Lokalizacja</label>
+                <div class="input-group">
+                    <input asp-for="Location" class="form-control" placeholder="Wpisz adres lub nazwę miejsca..." />
+                    <button class="btn btn-outline-secondary" type="button" id="geocode-button">
+                        <i class="bi bi-geo-alt"></i> Znajdź na mapie
+                    </button>
+                </div>
+                <div class="map-info">Kliknij na mapie, aby wybrać dokładną lokalizację</div>
+            </div>
+
+            <div class="form-section">
+                <div class="map-container">
+                    <div id="form-map"></div>
+                </div>
+            </div>
+
+            <input asp-for="Latitude" type="hidden" />
+            <input asp-for="Longitude" type="hidden" />
+
+            <div class="form-row">
+                <div class="form-section">
+                    <label asp-for="StartDateTime" class="form-label">Data i godzina rozpoczęcia</label>
+                    <input asp-for="StartDateTime" type="datetime-local" class="form-control" />
+                </div>
+                <div class="form-section">
+                    <label asp-for="EndDateTime" class="form-label">Data i godzina zakończenia</label>
+                    <input asp-for="EndDateTime" type="datetime-local" class="form-control" />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-section">
+                    <label asp-for="MaxParticipants" class="form-label">Maksymalna liczba uczestników</label>
+                    <input asp-for="MaxParticipants" class="form-control" placeholder="np. 50" />
+                </div>
+                <div class="form-section">
+                    <label asp-for="CategoryId" class="form-label">Kategoria</label>
+                    <select asp-for="CategoryId" class="form-control" asp-items="Model.Categories">
+                        <option value="">Wybierz kategorię...</option>
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <label asp-for="EventImage" class="form-label">Nowe zdjęcie wydarzenia</label>
+                <input asp-for="EventImage" class="form-control" type="file" accept="image/*" data-val="false" />
+                <small class="text-muted">Pozostaw puste, aby zachować obecne zdjęcie</small>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-check-circle me-2"></i>Zapisz Zmiany
+                </button>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Anuluj
+                </a>
+            </div>
+        </form>
     </div>
-    <div class="mb-3">
-        <label asp-for="EndDateTime" class="form-label"></label>
-        <input asp-for="EndDateTime" type="datetime-local" class="form-control" />
-    </div>
-    <div class="mb-3">
-        <label asp-for="MaxParticipants" class="form-label"></label>
-        <input asp-for="MaxParticipants" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label asp-for="CategoryId" class="control-label"></label>
-        <select asp-for="CategoryId" class="form-control" asp-items="Model.Categories"></select>
-        <span asp-validation-for="CategoryId" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="EventImage" class="form-label"></label>
-        <input asp-for="EventImage" class="form-control" type="file" data-val="false" />
-    </div>
-    <button type="submit" class="btn btn-success">Save</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-</form>
+</div>
 
 @section Scripts {
     @{
@@ -135,6 +171,17 @@
                         console.error('Błąd podczas geokodowania:', error);
                         alert('Wystąpił błąd podczas wyszukiwania adresu.');
                     });
+            });
+
+            const inputs = document.querySelectorAll('.form-control, .form-select');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'scale(1.005)';
+                });
+
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'scale(1)';
+                });
             });
         });
     </script>

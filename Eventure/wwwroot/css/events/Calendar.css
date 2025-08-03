@@ -1,0 +1,296 @@
+﻿@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.calendar-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 0;
+}
+
+.calendar-header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 16px;
+    padding: 3rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    animation: slideDown 0.8s ease-out;
+}
+
+.calendar-title {
+    font-weight: 300;
+    letter-spacing: -0.5px;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    font-size: 2.5rem;
+}
+
+.accent-line {
+    width: 80px;
+    height: 3px;
+    background: #3498db;
+    margin: 0 auto 1rem;
+    border-radius: 2px;
+}
+
+.calendar-subtitle {
+    color: #7f8c8d;
+    font-weight: 300;
+    font-size: 1.1rem;
+}
+
+.calendar-wrapper {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.8s ease-out 0.2s both;
+}
+
+#calendar {
+    min-height: 600px;
+}
+
+.fc {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.fc-toolbar {
+    margin-bottom: 2rem !important;
+}
+
+.fc-toolbar-title {
+    font-size: 1.8rem !important;
+    font-weight: 300 !important;
+    color: #2c3e50 !important;
+    letter-spacing: -0.5px;
+}
+
+.fc-button {
+    background: #3498db !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 0.5rem 1rem !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.3px;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2) !important;
+}
+
+    .fc-button:hover {
+        background: #2980b9 !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3) !important;
+    }
+
+    .fc-button:focus {
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2) !important;
+    }
+
+.fc-button-active {
+    background: #2980b9 !important;
+    box-shadow: 0 2px 8px rgba(41, 128, 185, 0.3) !important;
+}
+
+.fc-daygrid-day {
+    transition: background-color 0.3s ease;
+}
+
+    .fc-daygrid-day:hover {
+        background-color: rgba(52, 152, 219, 0.05) !important;
+    }
+
+.fc-day-today {
+    background-color: rgba(52, 152, 219, 0.1) !important;
+    border: 2px solid rgba(52, 152, 219, 0.3) !important;
+}
+
+.fc-daygrid-day-number {
+    color: #2c3e50;
+    font-weight: 500;
+    padding: 0.5rem;
+}
+
+.fc-event {
+    background: linear-gradient(135deg, #3498db, #2980b9) !important;
+    border: none !important;
+    border-radius: 6px !important;
+    padding: 0.25rem 0.5rem !important;
+    margin: 0.125rem 0 !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3) !important;
+    transition: all 0.3s ease !important;
+}
+
+    .fc-event:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4) !important;
+        cursor: pointer;
+    }
+
+.fc-event-title {
+    font-weight: 500 !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.fc-list-event {
+    border-radius: 8px !important;
+    margin-bottom: 0.5rem !important;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+    transition: all 0.3s ease !important;
+}
+
+    .fc-list-event:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+    }
+
+.fc-list-event-dot {
+    background: #3498db !important;
+}
+
+.fc-list-event-title {
+    color: #2c3e50 !important;
+    font-weight: 500 !important;
+}
+
+.fc-list-event-time {
+    color: #7f8c8d !important;
+    font-weight: 400 !important;
+}
+
+.calendar-loading {
+    display: none;
+    text-align: center;
+    padding: 2rem;
+    color: #7f8c8d;
+}
+
+    .calendar-loading i {
+        font-size: 2rem;
+        color: #3498db;
+        margin-bottom: 1rem;
+        animation: spin 1s linear infinite;
+    }
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.calendar-legend {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    animation: fadeIn 0.8s ease-out 0.4s both;
+}
+
+.legend-title {
+    color: #2c3e50;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.legend-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #7f8c8d;
+}
+
+.legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+@media (max-width: 768px) {
+    .calendar-container {
+        padding: 1rem;
+    }
+
+    .calendar-header,
+    .calendar-wrapper,
+    .calendar-legend {
+        padding: 1.5rem;
+    }
+
+    .calendar-title {
+        font-size: 2rem;
+    }
+
+    .fc-toolbar {
+        flex-direction: column !important;
+        gap: 1rem;
+    }
+
+    .fc-toolbar-chunk {
+        display: flex;
+        justify-content: center;
+    }
+
+    .fc-button {
+        font-size: 0.8rem !important;
+        padding: 0.4rem 0.8rem !important;
+    }
+
+    .legend-items {
+        justify-content: center;
+    }
+}

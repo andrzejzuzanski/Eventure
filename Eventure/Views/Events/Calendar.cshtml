@@ -2,34 +2,127 @@
     ViewData["Title"] = "Kalendarz Wydarzeń";
 }
 
-<h1>@ViewData["Title"]</h1>
-<p>Przeglądaj nadchodzące wydarzenia w widoku kalendarza.</p>
+<link rel="stylesheet" href="~/css/events/Calendar.css">
 
-<div id='calendar'></div>
+<div class="calendar-container">
+    <div class="calendar-header">
+        <h1 class="calendar-title">@ViewData["Title"]</h1>
+        <div class="accent-line"></div>
+        <p class="calendar-subtitle">Przeglądaj nadchodzące wydarzenia w widoku kalendarza</p>
+    </div>
+
+    <div class="calendar-loading" id="calendar-loading">
+        <i class="bi bi-arrow-repeat"></i>
+        <p>Ładowanie wydarzeń...</p>
+    </div>
+
+    <div class="calendar-wrapper">
+        <div id='calendar'></div>
+    </div>
+
+    <div class="calendar-legend">
+        <div class="legend-title">
+            <i class="bi bi-info-circle"></i>
+            Legenda
+        </div>
+        <div class="legend-items">
+            <div class="legend-item">
+                <div class="legend-color"></div>
+                <span>Wydarzenie</span>
+            </div>
+            <div class="legend-item">
+                <i class="bi bi-mouse" style="color: #3498db;"></i>
+                <span>Kliknij wydarzenie, aby zobaczyć szczegóły</span>
+            </div>
+            <div class="legend-item">
+                <i class="bi bi-calendar-plus" style="color: #27ae60;"></i>
+                <span>Kliknij datę, aby stworzyć nowe wydarzenie</span>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var calendarEl = document.getElementById('calendar');
+            const calendarEl = document.getElementById('calendar');
+            const loadingEl = document.getElementById('calendar-loading');
 
-            var calendar = new FullCalendar.Calendar(calendarEl, {
+            loadingEl.style.display = 'block';
 
+            const calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
+                height: 'auto',
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,listWeek'
                 },
-
+                buttonText: {
+                    today: 'Dzisiaj',
+                    month: 'Miesiąc',
+                    week: 'Tydzień',
+                    list: 'Lista'
+                },
                 events: '/Events/GetEventsForCalendar',
-
                 editable: false,
                 selectable: true,
-                dayMaxEvents: true,
-                locale: 'pl'
+                dayMaxEvents: 3,
+                locale: 'pl',
+
+                eventDisplay: 'block',
+                eventBackgroundColor: '#3498db',
+                eventBorderColor: 'transparent',
+                eventTextColor: '#ffffff',
+
+                loading: function(isLoading) {
+                    if (isLoading) {
+                        loadingEl.style.display = 'block';
+                    } else {
+                        loadingEl.style.display = 'none';
+                    }
+                },
+
+                eventClick: function(info) {
+                    if (info.event.id) {
+                        window.location.href = '/Events/Details/' + info.event.id;
+                    }
+                },
+
+                dateClick: function(info) {
+                    const createUrl = '/Events/Create?date=' + info.dateStr;
+                    if (confirm('Czy chcesz utworzyć nowe wydarzenie na dzień ' + info.dateStr + '?')) {
+                        window.location.href = createUrl;
+                    }
+                },
+
+                eventMouseEnter: function(info) {
+                    info.el.style.transform = 'translateY(-2px)';
+                    info.el.style.zIndex = '10';
+                },
+
+                eventMouseLeave: function(info) {
+                    info.el.style.transform = 'translateY(0)';
+                    info.el.style.zIndex = '1';
+                },
+
+                eventDidMount: function(info) {
+                    info.el.setAttribute('title', info.event.title + '\n' +
+                        info.event.start.toLocaleDateString('pl-PL') + ' ' +
+                        info.event.start.toLocaleTimeString('pl-PL', {hour: '2-digit', minute: '2-digit'}));
+                },
+
+                eventSourceFailure: function(error) {
+                    console.error('Błąd podczas ładowania wydarzeń:', error);
+                    loadingEl.innerHTML = '<i class="bi bi-exclamation-triangle" style="color: #e74c3c;"></i><p style="color: #e74c3c;">Wystąpił błąd podczas ładowania wydarzeń</p>';
+                }
             });
 
             calendar.render();
+
+            setTimeout(() => {
+                loadingEl.style.display = 'none';
+            }, 1000);
         });
     </script>
 }
