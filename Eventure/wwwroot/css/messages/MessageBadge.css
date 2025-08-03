@@ -1,0 +1,93 @@
+﻿.message-nav-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    color: #495057;
+}
+
+    .message-nav-link:hover {
+        background: rgba(52, 152, 219, 0.1);
+        color: #3498db;
+        text-decoration: none;
+        transform: translateY(-1px);
+    }
+
+.message-icon {
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.message-nav-link:hover .message-icon {
+    transform: scale(1.1);
+    color: #3498db;
+}
+
+.message-badge {
+    position: absolute;
+    top: -2px;
+    right: -8px;
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+    animation: badgePulse 2s infinite;
+    border: 2px solid white;
+}
+
+@keyframes badgePulse {
+    0%, 70%, 100% {
+        transform: scale(1);
+        box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+    }
+
+    35% {
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(231, 76, 60, 0.5);
+    }
+}
+
+@keyframes badgeAppear {
+    from {
+        opacity: 0;
+        transform: scale(0);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.message-badge.new {
+    animation: badgeAppear 0.3s ease-out, badgePulse 2s infinite 0.3s;
+}
+
+@media (max-width: 768px) {
+    .message-nav-link {
+        padding: 0.4rem 0.6rem;
+    }
+
+    .message-icon {
+        font-size: 1rem;
+    }
+
+    .message-badge {
+        top: -1px;
+        right: -6px;
+        font-size: 0.6rem;
+        min-width: 16px;
+        height: 16px;
+    }
+}

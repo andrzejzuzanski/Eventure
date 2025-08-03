@@ -1,12 +1,12 @@
 ﻿@model int
 
-<a class="nav-link position-relative d-inline-flex align-items-center" asp-controller="Messages" asp-action="Index">
-    <i class="bi bi-envelope fs-5"></i>
+<link rel="stylesheet" href="~/css/messages/MessageBadge.css" />
 
+<a class="message-nav-link" asp-controller="Messages" asp-action="Index" title="Wiadomości">
+    <i class="bi bi-envelope message-icon"></i>
     @if (Model > 0)
     {
-        <span class="position-absolute badge rounded-pill bg-danger"
-              style="top: 5px; right: -10px; font-size: 0.7rem; padding: 2px 6px;">
+        <span class="message-badge" data-count="@Model">
             @Model
             <span class="visually-hidden">nieprzeczytane wiadomości</span>
         </span>
