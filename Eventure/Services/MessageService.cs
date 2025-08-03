@@ -23,6 +23,7 @@ namespace Eventure.Services
                 .ThenInclude(p => p.User)
                 .Include(c => c.Messages)
                 .ThenInclude(m => m.Sender)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == conversationId && c.Participants.Any(p => p.UserId == userId));
 
             return conversation;
@@ -42,6 +43,7 @@ namespace Eventure.Services
                 .Include(c => c.Participants)
                 .ThenInclude(p => p.User)
                 .Include(c => c.Messages)
+                .AsNoTracking()
                 .Where(c => c.Participants.Any(p => p.UserId == userId))
                 .OrderByDescending(c => c.Messages.Any() ? c.Messages.Max(m => m.SentAt) : c.CreatedAt)
                 .ToListAsync();
