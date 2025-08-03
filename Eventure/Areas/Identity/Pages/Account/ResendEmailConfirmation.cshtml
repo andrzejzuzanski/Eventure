@@ -1,26 +1,87 @@
 ﻿@page
 @model ResendEmailConfirmationModel
 @{
-    ViewData["Title"] = "Resend email confirmation";
+    ViewData["Title"] = "Wyślij ponownie potwierdzenie e-mail";
 }
 
-<h1>@ViewData["Title"]</h1>
-<h2>Enter your email.</h2>
-<hr />
-<div class="row">
-    <div class="col-md-4">
+<link rel="stylesheet" href="~/css/Account/auth-styles.css" />
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1 class="auth-title">Potwierdź e-mail</h1>
+            <div class="accent-line"></div>
+            <p class="auth-subtitle">Nie otrzymałeś e-maila z potwierdzeniem? Wyślemy go ponownie</p>
+        </div>
+
         <form method="post">
             <div asp-validation-summary="All" class="text-danger" role="alert"></div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Email" class="form-control" aria-required="true" placeholder="name@example.com" />
-                <label asp-for="Input.Email" class="form-label"></label>
+            
+            <div class="form-floating">
+                <input asp-for="Input.Email" class="form-control" autocomplete="email" aria-required="true" placeholder="name@example.com" />
+                <label asp-for="Input.Email" class="form-label">Adres e-mail</label>
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
             </div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Resend</button>
+            
+            <button type="submit" class="w-100 btn btn-primary">
+                <i class="bi bi-envelope-arrow-up me-2"></i>Wyślij ponownie
+            </button>
+
+            <div class="auth-links">
+                <p>
+                    Masz już potwierdzone konto? 
+                    <a asp-page="./Login">
+                        <i class="bi bi-box-arrow-in-right me-1"></i>Zaloguj się
+                    </a>
+                </p>
+                <p>
+                    Nie masz konta? 
+                    <a asp-page="./Register">
+                        <i class="bi bi-person-plus me-1"></i>Zarejestruj się
+                    </a>
+                </p>
+            </div>
         </form>
     </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Enhanced form interactions
+            const emailInput = document.querySelector('.form-control');
+            
+            emailInput.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+            });
+            
+            emailInput.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+
+            // Email validation feedback
+            emailInput.addEventListener('input', function() {
+                const emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+                if (this.value && emailRegex.test(this.value)) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } else if (this.value) {
+                    this.classList.remove('is-valid');
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-valid', 'is-invalid');
+                }
+            });
+
+            // Loading state for submit button
+            const form = document.querySelector('form');
+            const submitBtn = document.querySelector('button[type="submit"]');
+            
+            form.addEventListener('submit', function() {
+                submitBtn.classList.add('loading');
+                submitBtn.disabled = true;
+            });
+        });
+    </script>
 }

@@ -1,21 +1,70 @@
 ﻿@page
 @model LogoutModel
 @{
-    ViewData["Title"] = "Log out";
+    ViewData["Title"] = "Wyloguj się";
 }
 
-<header>
-    <h1>@ViewData["Title"]</h1>
+<link rel="stylesheet" href="~/css/account/auth-styles.css" />
+
+<div class="logout-card">
+    <div class="auth-header">
+        <h1 class="auth-title">@ViewData["Title"]</h1>
+        <div class="accent-line"></div>
+    </div>
+
     @{
         if (User.Identity?.IsAuthenticated ?? false)
         {
-            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
-                <button type="submit" class="nav-link btn btn-link text-dark">Click here to Logout</button>
+            <div class="logout-message">
+                <i class="bi bi-person-circle display-4 text-muted mb-3"></i>
+                <p>Czy na pewno chcesz się wylogować?</p>
+            </div>
+
+            <form class="d-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-box-arrow-right me-2"></i>Tak, wyloguj mnie
+                </button>
             </form>
+
+            <div class="mt-3">
+                <a href="javascript:history.back()" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Anuluj
+                </a>
+            </div>
         }
         else
         {
-            <p>You have successfully logged out of the application.</p>
+            <div class="logout-message">
+                <i class="bi bi-check-circle-fill display-4 text-success mb-3"></i>
+                <p class="mb-4">Zostałeś pomyślnie wylogowany z aplikacji.</p>
+
+                <div class="auth-links">
+                    <a asp-page="./Login" class="btn btn-primary">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Zaloguj się ponownie
+                    </a>
+                    <div class="mt-3">
+                        <a asp-page="/Index" class="btn btn-outline-primary">
+                            <i class="bi bi-house me-2"></i>Przejdź do strony głównej
+                        </a>
+                    </div>
+                </div>
+            </div>
         }
     }
-</header>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Enhanced button interactions
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px) scale(1.02)';
+            });
+
+            button.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    });
+</script>

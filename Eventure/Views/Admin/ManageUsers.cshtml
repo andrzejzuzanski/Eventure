@@ -2,50 +2,207 @@
 @using Eventure.Models
 @inject UserManager<ApplicationUser> UserManager
 @model IEnumerable<Eventure.ViewModels.Admin.UserViewModel>
-
 @{
     ViewData["Title"] = "Zarządzaj użytkownikami";
 }
 
-<h1>@ViewData["Title"]</h1>
+<link rel="stylesheet" href="~/css/Admin/ManageUsers.css" />
 
-<table class="table table-striped table-bordered">
-    <thead class="thead-dark">
-        <tr>
-            <th>Nazwa użytkownika</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Akcje</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var user in Model)
-        {
-            <tr>
-                <td>@user.UserName</td>
-                <td>@user.Email</td>
-                <td>@string.Join(", ", user.Roles)</td>
-                <td>
-                    <a asp-action="ManageRoles" asp-route-id="@user.Id" class="btn btn-sm btn-primary">Zarządzaj rolami</a>
-                    @if (user.Id != UserManager.GetUserId(User))
-                    {
-                        @if (user.IsLockedOut)
-                        {
-                            <form asp-action="UnlockUser" asp-route-id="@user.Id" method="post" class="d-inline">
-                                <button type="submit" class="btn btn-sm btn-success">Odblokuj</button>
-                            </form>
-                        }
-                        else
-                        {
-                            <form asp-action="LockUser" asp-route-id="@user.Id" method="post" class="d-inline">
-                                <button type="submit" class="btn btn-sm btn-danger">Zablokuj</button>
-                            </form>
-                        }
-                    }
-                </td>
-            </tr>
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="text-center">
+            <h1 class="hero-title display-4">
+                <i class="bi bi-people hero-icon"></i>
+                Zarządzaj Użytkownikami
+            </h1>
+            <div class="accent-line"></div>
+            <p class="hero-subtitle">Administruj kontami użytkowników, rolami i uprawnieniami</p>
+        </div>
+    </div>
+</section>
+
+<div class="admin-container">
+    <!-- Users Statistics -->
+    <div class="users-stats">
+        <div class="stat-card total">
+            <div class="stat-number">@Model.Count()</div>
+            <div class="stat-label">Wszyscy użytkownicy</div>
+        </div>
+        <div class="stat-card active">
+            <div class="stat-number">@Model.Count(u => !u.IsLockedOut)</div>
+            <div class="stat-label">Aktywni użytkownicy</div>
+        </div>
+        <div class="stat-card locked">
+            <div class="stat-number">@Model.Count(u => u.IsLockedOut)</div>
+            <div class="stat-label">Zablokowani</div>
+        </div>
+        <div class="stat-card admins">
+            <div class="stat-number">@Model.Count(u => u.Roles.Contains("Admin"))</div>
+            <div class="stat-label">Administratorzy</div>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="table-container">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Użytkownik</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Akcje</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr class="@(user.IsLockedOut ? "locked-user" : "") @(user.Id == UserManager.GetUserId(User) ? "current-user-row" : "")">
+                        <td>
+                            <div class="user-info">
+                                <div class="user-avatar">
+                                    @(user.UserName?.Substring(0, 1).ToUpper() ?? "?")
+                                </div>
+                                <div class="user-details">
+                                    <div class="user-name">@user.UserName</div>
+                                    <div class="user-email">@user.Email</div>
+                                    @if (user.Id == UserManager.GetUserId(User))
+                                    {
+                                        <span class="current-user-indicator">
+                                            <i class="bi bi-person-check me-1"></i>To Ty
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="role-badges">
+                                @if (user.Roles.Any())
+                                {
+                                    @foreach (var role in user.Roles)
+                                    {
+                                        <span class="role-badge @(role.ToLower())">
+                                            @role
+                                        </span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="role-badge">Użytkownik</span>
+                                }
+                            </div>
+                        </td>
+                        <td>
+                            @if (user.IsLockedOut)
+                            {
+                                <span class="locked-indicator">
+                                    <i class="bi bi-lock me-1"></i>Zablokowany
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="text-success">
+                                    <i class="bi bi-check-circle me-1"></i>Aktywny
+                                </span>
+                            }
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a asp-action="ManageRoles" asp-route-id="@user.Id" class="btn btn-action btn-manage">
+                                    <i class="bi bi-gear me-1"></i>Role
+                                </a>
+
+                                @if (user.Id != UserManager.GetUserId(User))
+                                {
+                                    @if (user.IsLockedOut)
+                                    {
+                                        <form asp-action="UnlockUser" asp-route-id="@user.Id" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-action btn-unlock" title="Odblokuj użytkownika">
+                                                <i class="bi bi-unlock me-1"></i>Odblokuj
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="LockUser" asp-route-id="@user.Id" method="post" class="d-inline"
+                                              onsubmit="return confirm('Czy na pewno chcesz zablokować użytkownika @user.UserName?');">
+                                            <button type="submit" class="btn btn-action btn-lock" title="Zablokuj użytkownika">
+                                                <i class="bi bi-lock me-1"></i>Zablokuj
+                                            </button>
+                                        </form>
+                                    }
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Back Button -->
+    <div class="text-center">
+        <a asp-action="Index" class="back-button">
+            <i class="bi bi-arrow-left"></i>
+            Powrót do panelu
+        </a>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Smooth scroll behavior
+        document.documentElement.style.scrollBehavior = 'smooth';
+
+        // Enhanced table row interactions
+        const tableRows = document.querySelectorAll('tbody tr');
+        tableRows.forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                if (!this.classList.contains('current-user-row')) {
+                    this.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                }
+            });
+
+            row.addEventListener('mouseleave', function() {
+                this.style.boxShadow = '';
+            });
+        });
+
+        // Animate statistics on page load
+        const statNumbers = document.querySelectorAll('.stat-number');
+        statNumbers.forEach(stat => {
+            const finalValue = parseInt(stat.textContent);
+            animateNumber(stat, 0, finalValue, 1000);
+        });
+
+        function animateNumber(element, start, end, duration) {
+            const startTime = performance.now();
+
+            function updateNumber(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                const current = Math.floor(start + (end - start) * easeOutCubic(progress));
+                element.textContent = current;
+
+                if (progress < 1) {
+                    requestAnimationFrame(updateNumber);
+                }
+            }
+
+            requestAnimationFrame(updateNumber);
         }
-    </tbody>
-</table>
 
-<a asp-action="Index" class="btn btn-secondary">Powrót do panelu</a>
+        function easeOutCubic(t) {
+            return 1 - Math.pow(1 - t, 3);
+        }
+
+        // Add pulse effect to locked user rows
+        const lockedRows = document.querySelectorAll('.locked-user');
+        lockedRows.forEach(row => {
+            setInterval(() => {
+                row.style.borderLeftColor = row.style.borderLeftColor === 'rgb(231, 76, 60)' ? '#c0392b' : '#e74c3c';
+            }, 2000);
+        });
+    });
+</script>

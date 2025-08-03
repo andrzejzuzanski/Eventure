@@ -4,11 +4,85 @@
     ViewData["Title"] = "Potwierdzenie rejestracji";
 }
 
-<h1>@ViewData["Title"]</h1>
+<link rel="stylesheet" href="~/css/Account/auth-styles.css" />
 
-<div class="alert alert-success" role="alert">
-    <h4 class="alert-heading">Dziękujemy za rejestrację!</h4>
-    <p>Na Twój adres e-mail (<strong>@Model.Email</strong>) wysłaliśmy link aktywacyjny.</p>
-    <hr>
-    <p class="mb-0">Sprawdź swoją skrzynkę odbiorczą (oraz folder spam!) i kliknij w link, aby w pełni aktywować swoje konto i móc się zalogować.</p>
+<div class="confirmation-card">
+    <div class="auth-header">
+        <h1 class="auth-title">Witamy w Eventure!</h1>
+        <div class="accent-line"></div>
+    </div>
+
+    <div class="alert alert-success" role="alert">
+        <div class="text-center mb-4">
+            <i class="bi bi-envelope-heart display-1 text-success"></i>
+        </div>
+
+        <h4 class="alert-heading text-center">Dziękujemy za rejestrację!</h4>
+
+        <p class="text-center mb-3">
+            Na Twój adres e-mail <strong>@Model.Email</strong> wysłaliśmy link aktywacyjny.
+        </p>
+
+        <hr class="my-4">
+
+        <div class="text-center">
+            <p class="mb-4">
+                <i class="bi bi-info-circle me-2"></i>
+                Sprawdź swoją skrzynkę odbiorczą (oraz folder spam!) i kliknij w link,
+                aby w pełni aktywować swoje konto i móc się zalogować.
+            </p>
+
+            <div class="d-flex flex-column gap-3">
+                <a asp-page="./Login" class="btn btn-primary">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>
+                    Przejdź do logowania
+                </a>
+
+                <a asp-page="./ResendEmailConfirmation" class="btn btn-outline-primary">
+                    <i class="bi bi-envelope-arrow-up me-2"></i>
+                    Wyślij ponownie e-mail
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="auth-links mt-4">
+        <div class="text-center">
+            <small class="text-muted">
+                <i class="bi bi-clock me-1"></i>
+                Link aktywacyjny jest ważny przez 24 godziny
+            </small>
+        </div>
+    </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Celebration animation
+        const icon = document.querySelector('.bi-envelope-heart');
+
+        setTimeout(() => {
+            icon.style.animation = 'pulse 2s infinite';
+        }, 1000);
+
+        // Enhanced button interactions
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px) scale(1.02)';
+            });
+
+            button.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Auto-focus on primary action after delay
+        setTimeout(() => {
+            const primaryBtn = document.querySelector('.btn-primary');
+            if (primaryBtn) {
+                primaryBtn.focus();
+            }
+        }, 2000);
+    });
+</script>

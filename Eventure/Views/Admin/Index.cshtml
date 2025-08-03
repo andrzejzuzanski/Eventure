@@ -2,26 +2,131 @@
     ViewData["Title"] = "Panel Administracyjny";
 }
 
-<h1>@ViewData["Title"]</h1>
-<p>Witaj w panelu zarządzania aplikacją Eventure.</p>
+<link rel="stylesheet" href="~/css/admin/Index.css"/>
 
-<div class="row">
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Zarządzaj użytkownikami</h5>
-                <p class="card-text">Przeglądaj, blokuj i zarządzaj rolami użytkowników.</p>
-                <a asp-controller="Admin" asp-action="ManageUsers" class="btn btn-primary">Przejdź</a>
-            </div>
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="text-center">
+            <h1 class="hero-title display-4">
+                <i class="bi bi-shield-check hero-icon"></i>
+                Panel Administracyjny
+            </h1>
+            <div class="accent-line"></div>
+            <p class="hero-subtitle">Kompleksowe zarządzanie platformą Eventure. Monitoruj użytkowników, moderuj wydarzenia i analizuj statystyki.</p>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Zarządzaj wydarzeniami</h5>
-                <p class="card-text">Przeglądaj i usuwaj dowolne wydarzenie w systemie.</p>
-                <a asp-controller="Admin" asp-action="ManageEvents" class="btn btn-primary">Przejdź</a>
+</section>
+
+<div class="admin-container">
+    <!-- Welcome Message -->
+    <div class="welcome-message">
+        <p class="welcome-text">
+            Witaj w panelu zarządzania aplikacją Eventure. Stąd możesz efektywnie administrować całą platformą, zapewniając bezpieczne i przyjazne środowisko dla wszystkich użytkowników.
+        </p>
+    </div>
+
+    <!-- Admin Cards -->
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="admin-card users">
+                <div class="card-body">
+                    <div class="card-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <h5 class="card-title">Zarządzaj użytkownikami</h5>
+                    <p class="card-text">
+                        Przeglądaj profile użytkowników, zarządzaj rolami i uprawnieniami, blokuj konta naruszające regulamin oraz monitoruj aktywność na platformie.
+                    </p>
+                    <a asp-controller="Admin" asp-action="ManageUsers" class="btn btn-admin">
+                        <i class="bi bi-arrow-right"></i>
+                        Przejdź do zarządzania
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="admin-card events">
+                <div class="card-body">
+                    <div class="card-icon">
+                        <i class="bi bi-calendar-event"></i>
+                    </div>
+                    <h5 class="card-title">Zarządzaj wydarzeniami</h5>
+                    <p class="card-text">
+                        Moderuj treści wydarzeń, usuwaj nieodpowiednie materiały, weryfikuj lokalizacje oraz zapewniaj wysoką jakość publikowanych wydarzeń.
+                    </p>
+                    <a asp-controller="Admin" asp-action="ManageEvents" class="btn btn-admin">
+                        <i class="bi bi-arrow-right"></i>
+                        Przejdź do moderacji
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Smooth scroll behavior
+        document.documentElement.style.scrollBehavior = 'smooth';
+
+        // Add interactive hover effects
+        const cards = document.querySelectorAll('.admin-card');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.boxShadow = '0 25px 50px rgba(0, 0, 0, 0.2)';
+            });
+
+            card.addEventListener('mouseleave', function() {
+                this.style.boxShadow = '';
+            });
+        });
+
+        // Animate stats on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const statNumbers = entry.target.querySelectorAll('.stat-number');
+                    statNumbers.forEach(stat => {
+                        const finalValue = parseInt(stat.textContent.replace(/,/g, ''));
+                        animateNumber(stat, 0, finalValue, 1500);
+                    });
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        const statsGrid = document.querySelector('.stats-grid');
+        if (statsGrid) {
+            observer.observe(statsGrid);
+        }
+
+        function animateNumber(element, start, end, duration) {
+            const startTime = performance.now();
+
+            function updateNumber(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                const current = Math.floor(start + (end - start) * easeOutCubic(progress));
+                element.textContent = current.toLocaleString();
+
+                if (progress < 1) {
+                    requestAnimationFrame(updateNumber);
+                }
+            }
+
+            requestAnimationFrame(updateNumber);
+        }
+
+        function easeOutCubic(t) {
+            return 1 - Math.pow(1 - t, 3);
+        }
+    });
+</script>

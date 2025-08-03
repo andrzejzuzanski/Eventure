@@ -1,34 +1,211 @@
 ﻿@model Eventure.ViewModels.Admin.ManageUserRolesViewModel
-
 @{
     ViewData["Title"] = $"Zarządzaj rolami dla {Model.UserName}";
 }
 
-<h1>@ViewData["Title"]</h1>
+<link rel="stylesheet" href="~/css/Admin/ManageRoles.css" />
 
-<form method="post" asp-action="ManageRoles">
-    <div class="card">
-        <div class="card-header">
-            Zaznacz role, które chcesz przypisać do użytkownika.
-        </div>
-        <div class="card-body">
-            <input type="hidden" asp-for="UserId" />
-
-            @for (int i = 0; i < Model.Roles.Count; i++)
-            {
-                <div class="form-check m-1">
-                    <input type="hidden" asp-for="Roles[i].RoleName" />
-
-                    <input asp-for="Roles[i].IsSelected" class="form-check-input" />
-                    <label class="form-check-label" asp-for="Roles[i].IsSelected">
-                        @Model.Roles[i].RoleName
-                    </label>
-                </div>
-            }
-        </div>
-        <div class="card-footer">
-            <button type="submit" class="btn btn-primary">Zapisz zmiany</button>
-            <a asp-action="ManageUsers" class="btn btn-secondary">Anuluj</a>
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="text-center">
+            <h1 class="hero-title display-5">
+                <i class="bi bi-person-gear hero-icon"></i>
+                Zarządzaj rolami dla
+                <span class="user-badge">
+                    <i class="bi bi-person"></i>
+                    @Model.UserName
+                </span>
+            </h1>
+            <div class="accent-line"></div>
+            <p class="hero-subtitle">Przypisz odpowiednie uprawnienia dla tego użytkownika</p>
         </div>
     </div>
-</form>
+</section>
+
+<div class="roles-container">
+    <form method="post" asp-action="ManageRoles">
+        <div class="roles-form-card">
+            <div class="card-header">
+                <i class="bi bi-shield-check"></i>
+                Dostępne role systemowe
+            </div>
+            <div class="card-body">
+                <input type="hidden" asp-for="UserId" />
+
+                <div class="roles-grid">
+                    @for (int i = 0; i < Model.Roles.Count; i++)
+                    {
+                        var roleClass = Model.Roles[i].RoleName.ToLower();
+                        var isSelected = Model.Roles[i].IsSelected ? "selected" : "";
+
+                        <div class="role-item @roleClass @isSelected">
+                            <input type="hidden" asp-for="Roles[i].RoleName" />
+                            <input asp-for="Roles[i].IsSelected" class="role-checkbox" id="role-@i" />
+                            <label class="role-label" for="role-@i">
+                                <div class="role-icon">
+                                    @if (Model.Roles[i].RoleName == "Admin")
+                                    {
+                                        <i class="bi bi-shield-fill-exclamation"></i>
+                                    }
+                                    else if (Model.Roles[i].RoleName == "Moderator")
+                                    {
+                                        <i class="bi bi-shield-check"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-person"></i>
+                                    }
+                                </div>
+                                <div class="role-info">
+                                    <div class="role-name">@Model.Roles[i].RoleName</div>
+                                    <div class="role-description">
+                                        @if (Model.Roles[i].RoleName == "Admin")
+                                        {
+                                            @:Pełny dostęp do wszystkich funkcji systemu
+                                        }
+                                        else if (Model.Roles[i].RoleName == "Moderator")
+                                        {
+                                            @:Moderacja treści i zarządzanie wydarzeniami
+                                        }
+                                        else
+                                        {
+                                            @:Standardowy użytkownik platformy
+                                        }
+                                    </div>
+                                </div>
+                                <div class="role-checkbox-custom"></div>
+                            </label>
+
+                            <div class="role-permissions">
+                                <div class="permissions-title">
+                                    <i class="bi bi-key"></i>
+                                    Uprawnienia:
+                                </div>
+                                <ul class="permissions-list">
+                                    @if (Model.Roles[i].RoleName == "Admin")
+                                    {
+                                        <li>Zarządzanie wszystkimi użytkownikami</li>
+                                        <li>Usuwanie dowolnych wydarzeń</li>
+                                        <li>Dostęp do panelu administracyjnego</li>
+                                        <li>Zarządzanie rolami użytkowników</li>
+                                    }
+                                    else if (Model.Roles[i].RoleName == "Moderator")
+                                    {
+                                        <li>Moderacja treści wydarzeń</li>
+                                        <li>Usuwanie nieodpowiednich komentarzy</li>
+                                        <li>Blokowanie użytkowników</li>
+                                    }
+                                    else
+                                    {
+                                        <li>Tworzenie wydarzeń</li>
+                                        <li>Uczestniczenie w wydarzeniach</li>
+                                        <li>Dodawanie komentarzy</li>
+                                        <li>Wysyłanie wiadomości</li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-save">
+                        <i class="bi bi-check-circle"></i>
+                        Zapisz zmiany
+                    </button>
+                    <a asp-action="ManageUsers" class="btn btn-cancel">
+                        <i class="bi bi-x-circle"></i>
+                        Anuluj
+                    </a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Smooth scroll behavior
+        document.documentElement.style.scrollBehavior = 'smooth';
+
+        // Enhanced role selection interactions
+        const roleItems = document.querySelectorAll('.role-item');
+        const checkboxes = document.querySelectorAll('.role-checkbox');
+
+        // Update role item appearance based on checkbox state
+        function updateRoleItemAppearance(roleItem, isChecked) {
+            if (isChecked) {
+                roleItem.classList.add('selected');
+            } else {
+                roleItem.classList.remove('selected');
+            }
+        }
+
+        // Initialize appearance based on current state
+        checkboxes.forEach((checkbox, index) => {
+            const roleItem = roleItems[index];
+            updateRoleItemAppearance(roleItem, checkbox.checked);
+
+            checkbox.addEventListener('change', function() {
+                updateRoleItemAppearance(roleItem, this.checked);
+
+                // Add animation effect
+                roleItem.style.animation = 'roleToggle 0.3s ease';
+                setTimeout(() => {
+                    roleItem.style.animation = '';
+                }, 300);
+            });
+        });
+
+        // Enhanced hover effects
+        roleItems.forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                if (!this.classList.contains('selected')) {
+                    this.style.transform = 'translateY(-4px) scale(1.01)';
+                }
+            });
+
+            item.addEventListener('mouseleave', function() {
+                if (!this.classList.contains('selected')) {
+                    this.style.transform = '';
+                }
+            });
+        });
+
+        // Form validation
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            const checkedRoles = document.querySelectorAll('.role-checkbox:checked');
+            const userName = '@Model.UserName';
+
+            if (checkedRoles.length === 0) {
+                e.preventDefault();
+                alert('⚠️ Ostrzeżenie!\n\nMusisz przypisać przynajmniej jedną rolę użytkownikowi.');
+                return;
+            }
+
+            // Check if admin role is being assigned
+            const adminRole = Array.from(checkedRoles).find(cb =>
+                cb.closest('.role-item').classList.contains('admin')
+            );
+
+            if (adminRole) {
+                if (!confirm(`🔐 Przyznanie roli Administrator\n\nCzy na pewno chcesz nadać użytkownikowi "${userName}" uprawnienia administratora?\n\nUżytkownik będzie miał pełny dostęp do systemu!`)) {
+                    e.preventDefault();
+                    return;
+                }
+            }
+
+            // Show confirmation for changes
+            const roleNames = Array.from(checkedRoles).map(cb => {
+                const roleItem = cb.closest('.role-item');
+                return roleItem.querySelector('.role-name').textContent;
+            });
+
+            if (!confirm(`✅ Potwierdzenie zmian\n\nPrzypisane role dla "${userName}":\n${roleNames.join(', ')}\n\nCzy chcesz zapisać te zmiany?`)) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>

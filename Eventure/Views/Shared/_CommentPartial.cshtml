@@ -1,21 +1,129 @@
 ﻿@model Eventure.Models.Comment
 
-<div class="comment-container border-start ps-3 mb-3">
-    <div class="d-flex justify-content-between align-items-center">
-        <small>
-            <strong>@Model.User?.UserName</strong> - @Model.CreatedAt.ToString("g")
-        </small>
-        <button class="btn btn-sm btn-link" onclick="showReplyForm(@Model.Id)">Odpowiedz</button>
-    </div>
-    <p class="mb-1">@Model.Content</p>
+<link rel="stylesheet" href="~/css/CommentPartial.css" />
 
-    <div id="reply-form-container-@Model.Id" style="display: none;"></div>
+<div class="comment-item">
+    <div class="comment-header">
+        <div class="comment-author-info">
+            <div class="comment-avatar">
+                @(Model.User?.UserName?.Substring(0, 1).ToUpper() ?? "?")
+            </div>
+            <div>
+                <div class="comment-author">@(Model.User?.UserName ?? "Użytkownik")</div>
+                <div class="comment-date">
+                    <i class="bi bi-clock"></i>
+                    @Model.CreatedAt.ToString("dd MMM yyyy, HH:mm")
+                </div>
+            </div>
+        </div>
+        <div class="comment-actions">
+            <button class="btn btn-reply" onclick="showReplyForm(@Model.Id)">
+                <i class="bi bi-reply"></i>
+                Odpowiedz
+            </button>
+        </div>
+    </div>
+
+    <div class="comment-content">
+        @Model.Content
+    </div>
+
+    <div id="reply-form-container-@Model.Id" class="reply-form-container" style="display: none;"></div>
 
     @if (Model.Replies != null && Model.Replies.Any())
     {
-        foreach (var reply in Model.Replies)
-        {
-            <partial name="_CommentPartial" model="reply" />
-        }
+        <div class="comment-replies">
+            @foreach (var reply in Model.Replies)
+            {
+                <partial name="_CommentPartial" model="reply" />
+            }
+        </div>
     }
 </div>
+
+<script>
+    function showReplyForm(commentId) {
+        // Hide all other reply forms
+        const allReplyForms = document.querySelectorAll('[id^="reply-form-container-"]');
+        allReplyForms.forEach(form => {
+            if (form.id !== `reply-form-container-${commentId}`) {
+                form.style.display = 'none';
+                form.innerHTML = '';
+            }
+        });
+
+        const container = document.getElementById(`reply-form-container-${commentId}`);
+
+        if (container.style.display === 'none' || container.innerHTML === '') {
+            // Show reply form
+            container.innerHTML = `
+                <div class="reply-form">
+                    <div class="comment-form-container">
+                        <div class="comment-form-header">
+                            <i class="bi bi-chat-dots"></i>
+                            <span>Odpowiedz na komentarz</span>
+                        </div>
+                        <form method="post" action="/Comments/Add">
+                            <input type="hidden" name="EventId" value="${document.querySelector('input[name="EventId"]')?.value || ''}" />
+                            <input type="hidden" name="ParentCommentId" value="${commentId}" />
+                            <div class="mb-3">
+                                <textarea name="Content" class="form-control comment-textarea" rows="3" placeholder="Napisz odpowiedź..." required maxlength="1000"></textarea>
+                                <div class="character-counter">0 / 1000</div>
+                            </div>
+                            <div class="comment-form-actions">
+                                <button type="button" class="btn btn-cancel-comment" onclick="hideReplyForm(${commentId})">
+                                    <i class="bi bi-x-circle me-1"></i>Anuluj
+                                </button>
+                                <button type="submit" class="btn btn-submit-comment">
+                                    <i class="bi bi-send me-1"></i>Odpowiedz
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            container.style.display = 'block';
+
+            // Focus on textarea
+            const textarea = container.querySelector('textarea');
+            if (textarea) {
+                textarea.focus();
+
+                // Add character counter functionality
+                textarea.addEventListener('input', function() {
+                    const counter = container.querySelector('.character-counter');
+                    const current = this.value.length;
+                    const max = 1000;
+
+                    counter.textContent = `${current} / ${max}`;
+                    counter.classList.remove('warning', 'danger');
+
+                    if (current > max * 0.9) {
+                        counter.classList.add('danger');
+                    } else if (current > max * 0.7) {
+                        counter.classList.add('warning');
+                    }
+                });
+            }
+        } else {
+            hideReplyForm(commentId);
+        }
+    }
+
+    function hideReplyForm(commentId) {
+        const container = document.getElementById(`reply-form-container-${commentId}`);
+        container.style.display = 'none';
+        container.innerHTML = '';
+    }
+
+    // Close reply forms when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.comment-item') && !e.target.closest('.btn-reply')) {
+            const allReplyForms = document.querySelectorAll('[id^="reply-form-container-"]');
+            allReplyForms.forEach(form => {
+                form.style.display = 'none';
+                form.innerHTML = '';
+            });
+        }
+    });
+</script>

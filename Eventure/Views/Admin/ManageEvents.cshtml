@@ -1,70 +1,204 @@
 ﻿@using Eventure.Helpers
 @model PaginatedList<Eventure.Models.Event>
-
 @{
     ViewData["Title"] = "Zarządzaj wydarzeniami";
 }
 
-<h1>@ViewData["Title"]</h1>
+<link rel="stylesheet" href="~/css/Admin/ManageEvents.css" />
 
-<form method="get" class="row mb-4 align-items-end">
-    <div class="col-md-3">
-        <input name="searchTitle" class="form-control" placeholder="Szukaj po tytule" value="@Context.Request.Query["searchTitle"]" />
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="text-center">
+            <h1 class="hero-title display-4">
+                <i class="bi bi-calendar-event hero-icon"></i>
+                Zarządzaj Wydarzenia
+            </h1>
+            <div class="accent-line"></div>
+            <p class="hero-subtitle">Moderuj i zarządzaj wszystkimi wydarzeniami na platformie</p>
+        </div>
     </div>
-    <div class="col-md-3">
-        <input name="location" class="form-control" placeholder="Lokalizacja" value="@Context.Request.Query["location"]" />
-    </div>
-    <div class="col-md-3">
-        <select name="categoryId" class="form-select" asp-items="(IEnumerable<SelectListItem>)ViewBag.Categories"></select>
-    </div>
-    <div class="col-md-3">
-        <button type="submit" class="btn btn-primary w-100">Filtruj</button>
-    </div>
-</form>
+</section>
 
-<table class="table table-bordered table-hover">
-    <thead>
-        <tr>
-            <th>Tytuł</th>
-            <th>Organizator</th>
-            <th>Data rozpoczęcia</th>
-            <th>Akcje</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Title</td>
-                <td>@item.Organizer?.UserName</td>
-                <td>@item.StartDateTime.ToString("g")</td>
-                <td>
-                    <a asp-controller="Events" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info" target="_blank">Podgląd</a>
-                    
-                    <form asp-action="DeleteEvent" asp-route-id="@item.Id" method="post" class="d-inline" onsubmit="return confirm('Czy na pewno chcesz usunąć to wydarzenie? Nie można tego cofnąć!');">
-                        <button type="submit" class="btn btn-sm btn-danger">Usuń</button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="admin-container">
 
-<nav aria-label="Nawigacja stron">
-    <ul class="pagination justify-content-center">
-        @if (Model.HasPreviousPage)
-        {
-            <li class="page-item">
-                <a class="page-link" asp-action="ManageEvents" asp-route-pageNumber="@(Model.PageIndex - 1)" asp-route-searchTitle="@Context.Request.Query["searchTitle"]" asp-route-location="@Context.Request.Query["location"]" asp-route-categoryId="@Context.Request.Query["categoryId"]">« Poprzednia</a>
-            </li>
-        }
-        @if (Model.HasNextPage)
-        {
-            <li class="page-item">
-                <a class="page-link" asp-action="ManageEvents" asp-route-pageNumber="@(Model.PageIndex + 1)" asp-route-searchTitle="@Context.Request.Query["searchTitle"]" asp-route-location="@Context.Request.Query["location"]" asp-route-categoryId="@Context.Request.Query["categoryId"]">Następna »</a>
-            </li>
-        }
-    </ul>
-</nav>
+    <!-- Filter Form -->
+    <form method="get" class="filter-form">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Tytuł wydarzenia</label>
+                <input name="searchTitle" class="form-control" placeholder="Szukaj po tytule..." value="@Context.Request.Query["searchTitle"]" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Lokalizacja</label>
+                <input name="location" class="form-control" placeholder="Lokalizacja..." value="@Context.Request.Query["location"]" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Kategoria</label>
+                <select name="categoryId" class="form-select" asp-items="(IEnumerable<SelectListItem>)ViewBag.Categories">
+                    <option value="">Wszystkie kategorie</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">&nbsp;</label>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-funnel me-1"></i>Filtruj
+                </button>
+            </div>
+        </div>
+    </form>
 
-<a asp-action="Index" class="btn btn-secondary mt-3">Powrót do panelu</a>
+    <!-- Events Table -->
+    <div class="table-container">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Tytuł</th>
+                    <th>Organizator</th>
+                    <th>Data rozpoczęcia</th>
+                    <th>Lokalizacja</th>
+                    <th>Akcje</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="event-title" title="@item.Title">
+                                @item.Title
+                            </div>
+                        </td>
+                        <td>
+                            <div class="organizer-name">
+                                <i class="bi bi-person-circle me-1"></i>
+                                @(item.Organizer?.UserName ?? "Nieznany")
+                            </div>
+                        </td>
+                        <td>
+                            <div class="event-date">
+                                <i class="bi bi-calendar me-1"></i>
+                                @item.StartDateTime.ToString("dd.MM.yyyy")
+                                <br>
+                                <small class="text-muted">@item.StartDateTime.ToString("HH:mm")</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-muted">
+                                <i class="bi bi-geo-alt me-1"></i>
+                                @(item.Location ?? "Online")
+                            </div>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a asp-controller="Events" asp-action="Details" asp-route-id="@item.Id"
+                                   class="btn btn-action btn-info" target="_blank" title="Podgląd wydarzenia">
+                                    <i class="bi bi-eye me-1"></i>Podgląd
+                                </a>
+
+                                <form asp-action="DeleteEvent" asp-route-id="@item.Id" method="post" class="d-inline"
+                                      onsubmit="return confirm('Czy na pewno chcesz usunąć wydarzenie: @Html.Raw(Html.Encode(item.Title))? Tej operacji nie można cofnąć!');">
+                                    <button type="submit" class="btn btn-action btn-danger" title="Usuń wydarzenie">
+                                        <i class="bi bi-trash me-1"></i>Usuń
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <nav aria-label="Nawigacja stron">
+        <ul class="pagination justify-content-center">
+            @if (Model.HasPreviousPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-action="ManageEvents"
+                       asp-route-pageNumber="@(Model.PageIndex - 1)"
+                       asp-route-searchTitle="@Context.Request.Query["searchTitle"]"
+                       asp-route-location="@Context.Request.Query["location"]"
+                       asp-route-categoryId="@Context.Request.Query["categoryId"]">
+                        <i class="bi bi-chevron-left me-1"></i>Poprzednia
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        <i class="bi bi-chevron-left me-1"></i>Poprzednia
+                    </span>
+                </li>
+            }
+
+            @for (int i = Math.Max(1, Model.PageIndex - 2); i <= Math.Min(Model.TotalPages, Model.PageIndex + 2); i++)
+            {
+                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                    @if (i == Model.PageIndex)
+                    {
+                        <span class="page-link">@i</span>
+                    }
+                    else
+                    {
+                        <a class="page-link" asp-action="ManageEvents"
+                           asp-route-pageNumber="@i"
+                           asp-route-searchTitle="@Context.Request.Query["searchTitle"]"
+                           asp-route-location="@Context.Request.Query["location"]"
+                           asp-route-categoryId="@Context.Request.Query["categoryId"]">@i</a>
+                    }
+                </li>
+            }
+
+            @if (Model.HasNextPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-action="ManageEvents"
+                       asp-route-pageNumber="@(Model.PageIndex + 1)"
+                       asp-route-searchTitle="@Context.Request.Query["searchTitle"]"
+                       asp-route-location="@Context.Request.Query["location"]"
+                       asp-route-categoryId="@Context.Request.Query["categoryId"]">
+                        Następna<i class="bi bi-chevron-right ms-1"></i>
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        Następna<i class="bi bi-chevron-right ms-1"></i>
+                    </span>
+                </li>
+            }
+        </ul>
+    </nav>
+
+    <!-- Back Button -->
+    <div class="text-center">
+        <a asp-action="Index" class="back-button">
+            <i class="bi bi-arrow-left"></i>
+            Powrót do panelu
+        </a>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Smooth scroll behavior
+        document.documentElement.style.scrollBehavior = 'smooth';
+
+        // Enhanced table row interactions
+        const tableRows = document.querySelectorAll('tbody tr');
+        tableRows.forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+            });
+
+            row.addEventListener('mouseleave', function() {
+                this.style.boxShadow = '';
+            });
+        });
+    });
+</script>

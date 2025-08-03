@@ -1,0 +1,108 @@
+﻿.notification-nav-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    color: #495057;
+}
+
+    .notification-nav-link:hover {
+        background: rgba(52, 152, 219, 0.1);
+        color: #3498db;
+        text-decoration: none;
+        transform: translateY(-1px);
+    }
+
+.notification-icon {
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.notification-nav-link:hover .notification-icon {
+    transform: scale(1.1);
+    color: #3498db;
+    animation: bellRing 0.5s ease-in-out;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -2px;
+    right: -8px;
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
+    animation: badgePulse 2s infinite;
+    border: 2px solid white;
+}
+
+@keyframes badgePulse {
+    0%, 70%, 100% {
+        transform: scale(1);
+        box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
+    }
+
+    35% {
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(243, 156, 18, 0.5);
+    }
+}
+
+@keyframes badgeAppear {
+    from {
+        opacity: 0;
+        transform: scale(0);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes bellRing {
+    0%, 100% {
+        transform: rotate(0deg) scale(1.1);
+    }
+
+    25% {
+        transform: rotate(-10deg) scale(1.1);
+    }
+
+    75% {
+        transform: rotate(10deg) scale(1.1);
+    }
+}
+
+.notification-badge.new {
+    animation: badgeAppear 0.3s ease-out, badgePulse 2s infinite 0.3s;
+}
+
+@media (max-width: 768px) {
+    .notification-nav-link {
+        padding: 0.4rem 0.6rem;
+    }
+
+    .notification-icon {
+        font-size: 1rem;
+    }
+
+    .notification-badge {
+        top: -1px;
+        right: -6px;
+        font-size: 0.6rem;
+        min-width: 16px;
+        height: 16px;
+    }
+}

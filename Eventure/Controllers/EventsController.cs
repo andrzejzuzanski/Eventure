@@ -34,7 +34,7 @@ namespace Eventure.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index(string searchTitle, string location, DateTime? startDate, int? categoryId, int pageNumber = 1)
         {
-            int pageSize = 10;
+            int pageSize = 12;
 
             var paginated = await _eventService.GetFilteredEventsAsync(searchTitle, location, startDate, categoryId, pageNumber, pageSize);
 

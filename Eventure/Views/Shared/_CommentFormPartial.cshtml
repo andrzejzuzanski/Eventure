@@ -3,15 +3,76 @@
     int? parentCommentId = ViewData["ParentCommentId"] as int?;
 }
 
-<form asp-controller="Comments" asp-action="Add" method="post">
-    @Html.AntiForgeryToken()
+<link rel="stylesheet" href="~/css/CommentFormPartial.css" />
 
-    <input type="hidden" name="EventId" value="@eventId" />
-
-    <input type="hidden" name="ParentCommentId" value="@parentCommentId" />
-
-    <div class="mb-3">
-        <textarea name="Content" class="form-control" rows="3" placeholder="Napisz komentarz..." required></textarea>
+<div class="comment-form-container">
+    <div class="comment-form-header">
+        <i class="bi bi-chat-dots"></i>
+        @if (parentCommentId.HasValue)
+        {
+            <span>Odpowiedz na komentarz</span>
+        }
+        else
+        {
+            <span>Dodaj komentarz</span>
+        }
     </div>
-    <button type="submit" class="btn btn-primary">Wyślij</button>
-</form>
+
+    <form asp-controller="Comments" asp-action="Add" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="EventId" value="@eventId" />
+        <input type="hidden" name="ParentCommentId" value="@parentCommentId" />
+
+        <div class="mb-3">
+            <textarea name="Content"
+                      class="form-control comment-textarea"
+                      rows="4"
+                      placeholder="@(parentCommentId.HasValue ? "Napisz odpowiedź..." : "Podziel się swoimi przemyśleniami o tym wydarzeniu...")"
+                      required
+                      maxlength="1000"
+                      oninput="updateCharacterCounter(this)"></textarea>
+            <div class="character-counter" id="char-counter">0 / 1000</div>
+        </div>
+
+        <div class="comment-form-actions">
+            @if (parentCommentId.HasValue)
+            {
+                <button type="button" class="btn btn-cancel-comment" onclick="hideReplyForm(@parentCommentId)">
+                    <i class="bi bi-x-circle me-1"></i>Anuluj
+                </button>
+            }
+            <button type="submit" class="btn btn-submit-comment">
+                <i class="bi bi-send me-1"></i>
+                @(parentCommentId.HasValue ? "Odpowiedz" : "Opublikuj")
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function updateCharacterCounter(textarea) {
+        const counter = document.getElementById('char-counter');
+        const current = textarea.value.length;
+        const max = 1000;
+
+        counter.textContent = `${current} / ${max}`;
+
+        // Remove all classes
+        counter.classList.remove('warning', 'danger');
+
+        // Add appropriate class based on character count
+        if (current > max * 0.9) {
+            counter.classList.add('danger');
+        } else if (current > max * 0.7) {
+            counter.classList.add('warning');
+        }
+    }
+
+    // Initialize character counter on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const textareas = document.querySelectorAll('.comment-textarea');
+        textareas.forEach(textarea => {
+            updateCharacterCounter(textarea);
+        });
+    });
+</script>

@@ -1,33 +1,82 @@
 ﻿@model List<Eventure.Models.Notification>
-
 @{
     ViewData["Title"] = "Powiadomienia";
 }
 
-<h2>Powiadomienia</h2>
+<link rel="stylesheet" href="~/css/Notifications/Index.css" />
 
-@if (!Model.Any())
-{
-    <p>Brak powiadomień.</p>
-}
-else
-{
-    <ul class="list-group">
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="text-center">
+            <h1 class="hero-title display-4">Powiadomienia</h1>
+            <div class="accent-line"></div>
+            <p class="hero-subtitle">Bądź na bieżąco z najważniejszymi informacjami</p>
+        </div>
+    </div>
+</section>
+
+<div class="notifications-container">
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="bi bi-bell-slash"></i>
+            </div>
+            <h3>Brak powiadomień</h3>
+            <p>Gdy pojawią się nowe powiadomienia, znajdziesz je tutaj. Sprawdzaj regularnie, aby nie przegapić ważnych informacji o wydarzeniach!</p>
+        </div>
+    }
+    else
+    {
         @foreach (var n in Model)
         {
-            <li class="list-group-item @(n.IsRead ? "" : "fw-bold")">
-                <div>
-                    @n.Message
-                    <small class="text-muted d-block">@n.CreatedAt.ToLocalTime().ToString("g")</small>
-                </div>
+            <div class="notification-card @(n.IsRead ? "" : "unread")">
+                <div class="notification-body">
+                    <div class="notification-header">
+                        <div class="notification-icon">
+                            <i class="bi @(n.IsRead ? "bi-check-circle" : "bi-bell")"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-message">
+                                @n.Message
+                            </div>
+                            <div class="notification-time">
+                                <i class="bi bi-clock"></i>
+                                @n.CreatedAt.ToLocalTime().ToString("dd MMMM yyyy, HH:mm")
+                            </div>
+                        </div>
+                    </div>
 
-                @if (!n.IsRead)
-                {
-                    <form asp-action="MarkAsRead" asp-route-id="@n.Id" method="post" class="mt-1">
-                        <button class="btn btn-sm btn-outline-primary">Oznacz jako przeczytane</button>
-                    </form>
-                }
-            </li>
+                    @if (!n.IsRead)
+                    {
+                        <div class="notification-actions">
+                            <form asp-action="MarkAsRead" asp-route-id="@n.Id" method="post" class="d-inline">
+                                <button class="btn btn-mark-read">
+                                    <i class="bi bi-check me-1"></i>Oznacz jako przeczytane
+                                </button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            </div>
         }
-    </ul>
-}
+    }
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Smooth scroll behavior
+        document.documentElement.style.scrollBehavior = 'smooth';
+
+        // Enhanced interactions for mark as read buttons
+        const markButtons = document.querySelectorAll('.btn-mark-read');
+        markButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                const card = this.closest('.notification-card');
+                card.style.opacity = '0.6';
+                card.style.transform = 'scale(0.98)';
+            });
+        });
+    });
+</script>

@@ -1,56 +1,97 @@
 ﻿@page
 @model LoginModel
-
 @{
-    ViewData["Title"] = "Log in";
+    ViewData["Title"] = "Zaloguj się";
 }
 
-<h1>@ViewData["Title"]</h1>
-<div class="row">
-    <div class="col-md-4">
+<link rel="stylesheet" href="~/css/account/auth-styles.css" />
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1 class="auth-title">Zaloguj się</h1>
+            <div class="accent-line"></div>
+            <p class="auth-subtitle">Witaj ponownie! Miło Cię widzieć</p>
+        </div>
+
         <section>
             <form id="account" method="post">
-                <h2>Use a local account to log in.</h2>
-                <hr />
                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-                <div class="form-floating mb-3">
+
+                <div class="form-floating">
                     <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                    <label asp-for="Input.Email" class="form-label">Email</label>
+                    <label asp-for="Input.Email" class="form-label">Adres e-mail</label>
                     <span asp-validation-for="Input.Email" class="text-danger"></span>
                 </div>
-                <div class="form-floating mb-3">
+
+                <div class="form-floating">
                     <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                    <label asp-for="Input.Password" class="form-label">Password</label>
+                    <label asp-for="Input.Password" class="form-label">Hasło</label>
                     <span asp-validation-for="Input.Password" class="text-danger"></span>
                 </div>
-                <div class="checkbox mb-3">
+
+                <div class="checkbox">
                     <label asp-for="Input.RememberMe" class="form-label">
                         <input class="form-check-input" asp-for="Input.RememberMe" />
-                        @Html.DisplayNameFor(m => m.Input.RememberMe)
+                        Zapamiętaj mnie
                     </label>
                 </div>
-                <div>
-                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
-                </div>
-                <div>
-                    <p>
-                        <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
-                    </p>
-                    <p>
-                        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
-                    </p>
-                    <p>
-                        <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
-                    </p>
-                </div>
+
+                <button id="login-submit" type="submit" class="w-100 btn btn-primary">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Zaloguj się
+                </button>
             </form>
-            <form method="post" asp-page-handler="LoginDemo">
-                <button type="submit" class="w-100 btn btn-outline-primary mt-3">Zaloguj jako demo</button>
-            </form>
+
+            <div class="demo-section">
+                <form method="post" asp-page-handler="LoginDemo">
+                    <button type="submit" class="w-100 btn btn-outline-primary">
+                        <i class="bi bi-person-gear me-2"></i>Zaloguj jako demo
+                    </button>
+                </form>
+            </div>
+
+            <div class="auth-links">
+                <p>
+                    <a id="forgot-password" asp-page="./ForgotPassword">
+                        <i class="bi bi-key me-1"></i>Zapomniałeś hasła?
+                    </a>
+                </p>
+                <p>
+                    <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">
+                        <i class="bi bi-person-plus me-1"></i>Zarejestruj się jako nowy użytkownik
+                    </a>
+                </p>
+                <p>
+                    <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">
+                        <i class="bi bi-envelope me-1"></i>Wyślij ponownie potwierdzenie e-mail
+                    </a>
+                </p>
+            </div>
         </section>
     </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Enhanced form interactions
+            const inputs = document.querySelectorAll('.form-control');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'scale(1.02)';
+                });
+
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'scale(1)';
+                });
+            });
+
+            // Loading state for submit button
+            const submitBtn = document.getElementById('login-submit');
+            submitBtn.addEventListener('click', function() {
+                this.classList.add('loading');
+            });
+        });
+    </script>
 }
