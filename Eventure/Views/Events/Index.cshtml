@@ -2,7 +2,7 @@
 @model PaginatedList<Eventure.Models.Event>
 
 @{
-    ViewData["Title"] = "Nadchodzące Wydarzenia";
+    ViewData["Title"] = "Upcoming Events";
 }
 
 <link rel="stylesheet" href="~/css/events/Index.css">
@@ -11,9 +11,9 @@
 <section class="hero-section">
     <div class="container">
         <div class="text-center">
-            <h1 class="hero-title display-4">Odkryj Wydarzenia</h1>
+            <h1 class="hero-title display-4">Discover Events</h1>
             <div class="accent-line"></div>
-            <p class="hero-subtitle">Znajdź inspirujące spotkania, warsztaty i konferencje w Twojej okolicy</p>
+            <p class="hero-subtitle">Find inspiring meetings, workshops, and conferences in your area</p>
         </div>
     </div>
 </section>
@@ -22,21 +22,21 @@
     <form method="get" class="filter-form">
         <div class="row g-3">
             <div class="col-md-3">
-                <input name="searchTitle" class="form-control" placeholder="Szukaj po tytule..." value="@Context.Request.Query["searchTitle"]" />
+                <input name="searchTitle" class="form-control" placeholder="Search by title..." value="@Context.Request.Query["searchTitle"]" />
             </div>
             <div class="col-md-2">
-                <input name="location" class="form-control" placeholder="Lokalizacja..." value="@Context.Request.Query["location"]" />
+                <input name="location" class="form-control" placeholder="Location..." value="@Context.Request.Query["location"]" />
             </div>
             <div class="col-md-2">
                 <input name="startDate" type="date" class="form-control" value="@Context.Request.Query["startDate"]" />
             </div>
             <div class="col-md-3">
                 <select name="categoryId" class="form-select" asp-items="(IEnumerable<SelectListItem>)ViewBag.Categories">
-                    <option value="">Wszystkie kategorie</option>
+                    <option value="">All categories</option>
                 </select>
             </div>
             <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100">Filtruj</button>
+                <button type="submit" class="btn btn-primary w-100">Filter</button>
             </div>
         </div>
     </form>
@@ -45,9 +45,9 @@
     {
         <div class="empty-state">
             <i class="bi bi-calendar-x display-1 text-muted mb-3"></i>
-            <h3>Nie znaleziono wydarzeń</h3>
-            <p>Spróbuj zmienić filtry lub sprawdź ponownie później</p>
-            <a asp-action="Index" class="btn btn-secondary">Wyczyść filtry</a>
+            <h3>No events found</h3>
+            <p>Try changing the filters or check again later.</p>
+            <a asp-action="Index" class="btn btn-secondary">Clear filters</a>
         </div>
     }
     else
@@ -80,7 +80,7 @@
                                     <span>@(item.Location ?? "Online")</span>
                                 </div>
                                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary w-100">
-                                    Zobacz szczegóły
+                                    See details
                                 </a>
                             </div>
                         </div>
@@ -107,14 +107,14 @@
                        asp-route-location="@Context.Request.Query["location"]"
                        asp-route-startDate="@Context.Request.Query["startDate"]"
                        asp-route-categoryId="@Context.Request.Query["categoryId"]">
-                        Poprzednia
+                        Previous
                     </a>
                 </li>
             }
             else
             {
                 <li class="page-item disabled">
-                    <span class="page-link">Poprzednia</span>
+                    <span class="page-link">Previous</span>
                 </li>
             }
 
@@ -131,14 +131,14 @@
                        asp-route-location="@Context.Request.Query["location"]"
                        asp-route-startDate="@Context.Request.Query["startDate"]"
                        asp-route-categoryId="@Context.Request.Query["categoryId"]">
-                        Następna
+                        Next
                     </a>
                 </li>
             }
             else
             {
                 <li class="page-item disabled">
-                    <span class="page-link">Następna</span>
+                    <span class="page-link">Next</span>
                 </li>
             }
         </ul>
@@ -148,7 +148,7 @@
     {
         <div class="text-center mb-5">
             <a class="btn create-btn" asp-action="Create">
-                Stwórz Nowe Wydarzenie
+                Create New Event
             </a>
         </div>
     }

@@ -275,7 +275,6 @@ body {
     margin: 0;
 }
 
-/* Staggered animation delays */
 .admin-card:nth-child(1) {
     animation-delay: 0.1s;
 }

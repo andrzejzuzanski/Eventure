@@ -74,8 +74,8 @@ namespace Eventure.Areas.Identity.Pages.Account
 
                 await _emailService.SendEmailAsync(
                             Input.Email,
-                            "Resetowanie hasła w Eventure",
-                            $"Otrzymaliśmy prośbę o zresetowanie Twojego hasła. Kliknij w poniższy link, aby ustawić nowe hasło: <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>zresetuj hasło</a>.");
+                            "Resetting your password in Eventure",
+                            $"We have received a request to reset your password. Click on the link below to set a new password.: <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>reset password</a>.");
                 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }

@@ -145,9 +145,9 @@ namespace Eventure.Areas.Identity.Pages.Account
 
                     await _emailService.SendEmailAsync(
                         Input.Email,
-                        "Witaj w Eventure! Potwierdź swój adres e-mail.",
-                        $"Dziękujemy za rejestrację w naszym serwisie! Aby dokończyć proces, " +
-                        $"proszę potwierdzić swój adres e-mail, klikając w poniższy link: <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>kliknij tutaj</a>.");
+                        "Welcome to Eventure! Please confirm your email address.",
+                        $"Thank you for registering on our website! To complete the process," +
+                        $"please confirm your email address by clicking on the link below: <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>click here</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
@@ -172,7 +172,6 @@ namespace Eventure.Areas.Identity.Pages.Account
                 }
             }
 
-            // If we got this far, something failed, redisplay form
             return Page();
         }
 

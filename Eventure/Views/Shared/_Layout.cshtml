@@ -22,7 +22,9 @@
         <nav class="navbar navbar-expand-lg navbar-light fixed-top">
             <div class="container-fluid">
                 <a class="navbar-brand">
-                    <i class="bi bi-calendar-event me-2"></i>Eventure
+                    <a class="navbar-brand" asp-area="" asp-controller="Events" asp-action="Index">
+                        <i class="bi bi-calendar-event me-2"></i>Eventure
+                    </a>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -32,24 +34,24 @@
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Events" asp-action="Index">
-                                <i class="bi bi-calendar-check me-1"></i>Wydarzenia
+                                <i class="bi bi-calendar-check me-1"></i>Events
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Events" asp-action="Calendar">
-                                <i class="bi bi-calendar3 me-1"></i>Kalendarz
+                                <i class="bi bi-calendar3 me-1"></i>Calendar
                             </a>
                         </li>
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Events" asp-action="Create">
-                                    <i class="bi bi-plus-circle me-1"></i>Utwórz
+                                    <i class="bi bi-plus-circle me-1"></i>Create
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Events" asp-action="MyEvents">
-                                    <i class="bi bi-person-workspace me-1"></i>Moje wydarzenia
+                                    <i class="bi bi-person-workspace me-1"></i>My Events
                                 </a>
                             </li>
 
@@ -57,7 +59,7 @@
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-warning fw-bold" asp-controller="Admin" asp-action="Index">
-                                        <i class="bi bi-shield-check me-1"></i>Panel Admina
+                                        <i class="bi bi-shield-check me-1"></i>Admin panel
                                     </a>
                                 </li>
                             }
@@ -97,7 +99,7 @@
                 <div class="alert alert-@type alert-dismissible fade show mt-3" role="alert">
                     <i class="bi bi-@(type == "success" ? "check-circle" : type == "warning" ? "exclamation-triangle" : type == "danger" ? "x-circle" : "info-circle") me-2"></i>
                     @TempData["Message"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zamknij"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             </div>
         }
@@ -111,7 +113,7 @@
                 </div>
                 <div class="col-md-6 text-md-end">
                     <a asp-area="" asp-controller="Home" asp-action="Privacy" class="me-3">
-                        <i class="bi bi-shield-lock me-1"></i>Prywatność
+                        <i class="bi bi-shield-lock me-1"></i>Privacy
                     </a>
                     <a href="#" class="text-muted">
                         Andrzej Zuzański 2025
@@ -127,12 +129,11 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     <script>
+
         document.addEventListener("DOMContentLoaded", function () {
-            // Enhanced loading states
             const notificationBell = document.getElementById("notification-bell");
             const messagesBadge = document.getElementById("messages-badge");
 
-            // Load notifications with error handling
             fetch('/Notifications/UnreadCount')
                 .then(response => {
                     if (!response.ok) throw new Error('Network response was not ok');
@@ -153,7 +154,6 @@
                     }
                 });
 
-            // Load messages with error handling
             fetch('/Messages/UnreadCount')
                 .then(response => {
                     if (!response.ok) throw new Error('Network response was not ok');
@@ -174,10 +174,8 @@
                     }
                 });
 
-            // Smooth scroll behavior
             document.documentElement.style.scrollBehavior = 'smooth';
 
-            // Enhanced navbar behavior on scroll
             let lastScrollTop = 0;
             const navbar = document.querySelector('.navbar');
 
@@ -192,7 +190,6 @@
                 lastScrollTop = scrollTop;
             });
 
-            // Auto-dismiss alerts after 5 seconds
             const alerts = document.querySelectorAll('.alert:not(.alert-permanent)');
             alerts.forEach(alert => {
                 setTimeout(() => {

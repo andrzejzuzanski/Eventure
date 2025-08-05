@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Kalendarz Wydarzeń";
+    ViewData["Title"] = "Events Calendar";
 }
 
 <link rel="stylesheet" href="~/css/events/Calendar.css">
@@ -8,12 +8,12 @@
     <div class="calendar-header">
         <h1 class="calendar-title">@ViewData["Title"]</h1>
         <div class="accent-line"></div>
-        <p class="calendar-subtitle">Przeglądaj nadchodzące wydarzenia w widoku kalendarza</p>
+        <p class="calendar-subtitle">Browse upcoming events in calendar view</p>
     </div>
 
     <div class="calendar-loading" id="calendar-loading">
         <i class="bi bi-arrow-repeat"></i>
-        <p>Ładowanie wydarzeń...</p>
+        <p>Loading events...</p>
     </div>
 
     <div class="calendar-wrapper">
@@ -23,20 +23,20 @@
     <div class="calendar-legend">
         <div class="legend-title">
             <i class="bi bi-info-circle"></i>
-            Legenda
+            Legend
         </div>
         <div class="legend-items">
             <div class="legend-item">
                 <div class="legend-color"></div>
-                <span>Wydarzenie</span>
+                <span>Event</span>
             </div>
             <div class="legend-item">
                 <i class="bi bi-mouse" style="color: #3498db;"></i>
-                <span>Kliknij wydarzenie, aby zobaczyć szczegóły</span>
+                <span>Click on the event to see the details.</span>
             </div>
             <div class="legend-item">
                 <i class="bi bi-calendar-plus" style="color: #27ae60;"></i>
-                <span>Kliknij datę, aby stworzyć nowe wydarzenie</span>
+                <span>Click on the date to create a new event.</span>
             </div>
         </div>
     </div>
@@ -59,10 +59,10 @@
                     right: 'dayGridMonth,timeGridWeek,listWeek'
                 },
                 buttonText: {
-                    today: 'Dzisiaj',
-                    month: 'Miesiąc',
-                    week: 'Tydzień',
-                    list: 'Lista'
+                    today: 'Today',
+                    month: 'Month',
+                    week: 'Week',
+                    list: 'List'
                 },
                 events: '/Events/GetEventsForCalendar',
                 editable: false,
@@ -91,7 +91,7 @@
 
                 dateClick: function(info) {
                     const createUrl = '/Events/Create?date=' + info.dateStr;
-                    if (confirm('Czy chcesz utworzyć nowe wydarzenie na dzień ' + info.dateStr + '?')) {
+                    if (confirm('Do you want to create a new event for the day ' + info.dateStr + '?')) {
                         window.location.href = createUrl;
                     }
                 },
@@ -113,8 +113,8 @@
                 },
 
                 eventSourceFailure: function(error) {
-                    console.error('Błąd podczas ładowania wydarzeń:', error);
-                    loadingEl.innerHTML = '<i class="bi bi-exclamation-triangle" style="color: #e74c3c;"></i><p style="color: #e74c3c;">Wystąpił błąd podczas ładowania wydarzeń</p>';
+                    console.error('Error while loading events:', error);
+                    loadingEl.innerHTML = '<i class="bi bi-exclamation-triangle" style="color: #e74c3c;"></i><p style="color: #e74c3c;">An error occurred while loading events</p>';
                 }
             });
 

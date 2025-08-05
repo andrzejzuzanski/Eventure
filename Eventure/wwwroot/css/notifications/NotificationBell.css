@@ -2,11 +2,15 @@
     position: relative;
     display: inline-flex;
     align-items: center;
-    padding: 0.5rem 0.75rem;
+    /*padding: 0.5rem 0rem 0.5rem 0.75rem;*/
     border-radius: 8px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
     color: #495057;
+    /* Zapewnienie stałego rozmiaru kontenera */
+    min-width: 44px;
+    min-height: 44px;
+    justify-content: center;
 }
 
     .notification-nav-link:hover {
@@ -17,14 +21,31 @@
     }
 
 .notification-icon {
-    font-size: 1.1rem;
-    transition: all 0.3s ease;
+    font-size: 1.1rem !important;
+    transition: color 0.3s ease;
+    line-height: 1 !important;
+    width: 1.1rem !important;
+    height: 1.1rem !important;
+    display: inline-block !important;
+    text-align: center !important;
 }
 
 .notification-nav-link:hover .notification-icon {
-    transform: scale(1.1);
-    color: #3498db;
+    color: #3498db !important;
     animation: bellRing 0.5s ease-in-out;
+}
+
+.notification-nav-link:active .notification-icon,
+.notification-nav-link:focus .notification-icon,
+.notification-nav-link:visited .notification-icon,
+.notification-nav-link.active .notification-icon,
+.notification-nav-link[aria-expanded="true"] .notification-icon,
+.notification-nav-link:target .notification-icon {
+    font-size: 1.1rem !important;
+    width: 1.1rem !important;
+    height: 1.1rem !important;
+    transform: none !important;
+    line-height: 1 !important;
 }
 
 .notification-badge {
@@ -45,6 +66,7 @@
     box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
     animation: badgePulse 2s infinite;
     border: 2px solid white;
+    z-index: 10;
 }
 
 @keyframes badgePulse {
@@ -73,15 +95,15 @@
 
 @keyframes bellRing {
     0%, 100% {
-        transform: rotate(0deg) scale(1.1);
+        transform: rotate(0deg);
     }
 
     25% {
-        transform: rotate(-10deg) scale(1.1);
+        transform: rotate(-10deg);
     }
 
     75% {
-        transform: rotate(10deg) scale(1.1);
+        transform: rotate(10deg);
     }
 }
 
@@ -89,13 +111,44 @@
     animation: badgeAppear 0.3s ease-out, badgePulse 2s infinite 0.3s;
 }
 
+.notification-nav-link * {
+    box-sizing: border-box;
+}
+
+.navbar-nav .nav-item .notification-nav-link {
+    font-size: inherit !important;
+}
+
+    .navbar-nav .nav-item .notification-nav-link .notification-icon {
+        font-size: 1.1rem !important;
+        width: 1.1rem !important;
+        height: 1.1rem !important;
+    }
+
 @media (max-width: 768px) {
     .notification-nav-link {
         padding: 0.4rem 0.6rem;
+        min-width: 40px;
+        min-height: 40px;
     }
 
     .notification-icon {
-        font-size: 1rem;
+        font-size: 1rem !important;
+        width: 1rem !important;
+        height: 1rem !important;
+    }
+
+    .notification-nav-link:hover .notification-icon,
+    .notification-nav-link:active .notification-icon,
+    .notification-nav-link:focus .notification-icon,
+    .notification-nav-link:visited .notification-icon,
+    .notification-nav-link.active .notification-icon,
+    .notification-nav-link[aria-expanded="true"] .notification-icon,
+    .notification-nav-link:target .notification-icon {
+        font-size: 1rem !important;
+        width: 1rem !important;
+        height: 1rem !important;
+        transform: none !important;
     }
 
     .notification-badge {

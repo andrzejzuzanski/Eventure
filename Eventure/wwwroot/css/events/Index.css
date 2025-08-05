@@ -236,7 +236,6 @@ body {
         width: 16px;
     }
 
-/* Staggered animation delays */
 .event-card:nth-child(1) {
     animation-delay: 0.1s;
 }
@@ -261,7 +260,6 @@ body {
     animation-delay: 0.6s;
 }
 
-/* Subtle accent line */
 .accent-line {
     width: 60px;
     height: 3px;

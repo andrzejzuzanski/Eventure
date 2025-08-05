@@ -155,18 +155,15 @@ namespace Eventure.Areas.Identity.Pages.Account
             var demoEmail = "demo@eventure.com";
             var demoPassword = "SuperSecretPassword123!";
 
-            // Krok 1: Znajdź użytkownika po jego e-mailu
             var user = await _userManager.FindByEmailAsync(demoEmail);
 
-            // Krok 2: Sprawdź, czy użytkownik istnieje
             if (user == null)
             {
-                TempData["Message"] = "Konto demo nie zostało znalezione w bazie danych.";
+                TempData["Message"] = "The demo account was not found in the database.";
                 TempData["MessageType"] = "danger";
                 return RedirectToPage();
             }
 
-            // Krok 3: Użyj znalezionego użytkownika (i jego UserName) do zalogowania
             var result = await _signInManager.PasswordSignInAsync(user, demoPassword, isPersistent: true, lockoutOnFailure: false);
 
             if (result.Succeeded)
@@ -174,7 +171,7 @@ namespace Eventure.Areas.Identity.Pages.Account
                 return LocalRedirect(Url.Content("~/Events"));
             }
 
-            TempData["Message"] = "Nie udało się zalogować na konto demo. Sprawdź, czy hasło się zgadza i konto nie jest zablokowane.";
+            TempData["Message"] = "Unable to log in to the demo account. Please check that the password is correct and that the account is not blocked.";
             TempData["MessageType"] = "danger";
             return RedirectToPage();
         }

@@ -9,32 +9,32 @@
 <div class="create-container">
     <div class="form-card">
         <div class="form-header">
-            <h1 class="form-title">Stwórz Wydarzenie</h1>
+            <h1 class="form-title">Create an Event</h1>
             <div class="accent-line"></div>
-            <p class="form-subtitle">Podziel się swoim pomysłem ze światem</p>
+            <p class="form-subtitle">Share your event with the world</p>
         </div>
 
         <form asp-action="Create" method="post" enctype="multipart/form-data">
             <div class="form-section">
-                <label asp-for="Title" class="form-label">Tytuł wydarzenia</label>
-                <input asp-for="Title" class="form-control" placeholder="Wprowadź nazwę wydarzenia..." />
+                <label asp-for="Title" class="form-label">Event title</label>
+                <input asp-for="Title" class="form-control" placeholder="Enter the name of the event..." />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
 
             <div class="form-section">
                 <label asp-for="Description" class="form-label">Opis</label>
-                <textarea asp-for="Description" class="form-control" placeholder="Opisz szczegóły wydarzenia, program, co uczestników czeka..."></textarea>
+                <textarea asp-for="Description" class="form-control" placeholder="Describe the details of the event, the program, what participants can expect..."></textarea>
             </div>
 
             <div class="form-section">
-                <label asp-for="Location" class="form-label">Lokalizacja</label>
+                <label asp-for="Location" class="form-label">Location</label>
                 <div class="input-group">
-                    <input asp-for="Location" class="form-control" placeholder="Wpisz adres lub nazwę miejsca..." />
+                    <input asp-for="Location" class="form-control" placeholder="Enter the address or name of the place..." />
                     <button class="btn btn-outline-secondary" type="button" id="geocode-button">
-                        <i class="bi bi-geo-alt"></i> Znajdź na mapie
+                        <i class="bi bi-geo-alt"></i> Find on map
                     </button>
                 </div>
-                <div class="map-info">Kliknij na mapie, aby wybrać dokładną lokalizację</div>
+                <div class="map-info">Click on the map to select the exact location</div>
             </div>
 
             <div class="form-section">
@@ -48,41 +48,41 @@
 
             <div class="form-row">
                 <div class="form-section">
-                    <label asp-for="StartDateTime" class="form-label">Data i godzina rozpoczęcia</label>
+                    <label asp-for="StartDateTime" class="form-label">Start date and time</label>
                     <input asp-for="StartDateTime" class="form-control" type="datetime-local" value="@Model.StartDateTime.ToString("yyyy-MM-ddTHH:mm")" />
                 </div>
                 <div class="form-section">
-                    <label asp-for="EndDateTime" class="form-label">Data i godzina zakończenia</label>
+                    <label asp-for="EndDateTime" class="form-label">End date and time</label>
                     <input asp-for="EndDateTime" type="datetime-local" class="form-control" value="@Model.EndDateTime.ToString("yyyy-MM-ddTHH:mm")" />
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-section">
-                    <label asp-for="MaxParticipants" class="form-label">Maksymalna liczba uczestników</label>
+                    <label asp-for="MaxParticipants" class="form-label">Maximum number of participants</label>
                     <input asp-for="MaxParticipants" class="form-control" placeholder="np. 50" />
                 </div>
                 <div class="form-section">
-                    <label asp-for="CategoryId" class="form-label">Kategoria</label>
+                    <label asp-for="CategoryId" class="form-label">Category</label>
                     <select asp-for="CategoryId" class="form-control" asp-items="Model.Categories">
-                        <option value="">Wybierz kategorię...</option>
+                        <option value="">Select a category...</option>
                     </select>
                     <span asp-validation-for="CategoryId" class="text-danger"></span>
                 </div>
             </div>
 
             <div class="form-section">
-                <label asp-for="EventImage" class="form-label">Zdjęcie wydarzenia</label>
+                <label asp-for="EventImage" class="form-label">Event photo</label>
                 <input asp-for="EventImage" class="form-control" type="file" accept="image/*" data-val="false" />
-                <small class="text-muted">Wybierz atrakcyjne zdjęcie, które przyciągnie uwagę uczestników</small>
+                <small class="text-muted">Select an attractive photo that will catch the attention of participants.</small>
             </div>
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-success">
-                    <i class="bi bi-check-circle me-2"></i>Utwórz Wydarzenie
+                    <i class="bi bi-check-circle me-2"></i>Create Event
                 </button>
                 <a asp-action="Index" class="btn btn-secondary">
-                    <i class="bi bi-arrow-left me-2"></i>Anuluj
+                    <i class="bi bi-arrow-left me-2"></i>Cancel
                 </a>
             </div>
         </form>
@@ -124,7 +124,7 @@
                             locationInput.value = data.display_name;
                         }
                     })
-                    .catch(error => console.error('Błąd podczas odwrotnego geokodowania:', error));
+                    .catch(error => console.error('Error during reverse geocoding:', error));
             }
 
             function updateMarkerAndInputs(lat, lon, shouldReverseGeocode = false) {
@@ -151,7 +151,7 @@
             geocodeButton.addEventListener('click', function () {
                 const address = locationInput.value;
                 if (!address) {
-                    alert('Proszę wpisać adres w polu lokalizacji.');
+                    alert('Please enter the address in the location field.');
                     return;
                 }
 
@@ -164,12 +164,12 @@
                             const result = data[0];
                             updateMarkerAndInputs(result.lat, result.lon);
                         } else {
-                            alert('Nie znaleziono lokalizacji. Spróbuj podać bardziej szczegółowy adres.');
+                            alert('No location found. Try entering a more specific address.');
                         }
                     })
                     .catch(error => {
-                        console.error('Błąd podczas geokodowania:', error);
-                        alert('Wystąpił błąd podczas wyszukiwania adresu.');
+                        console.error('Error during geocoding:', error);
+                        alert('An error occurred while searching for the address.');
                     });
             });
 

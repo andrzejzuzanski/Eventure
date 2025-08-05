@@ -8,41 +8,41 @@ namespace Eventure.ViewModels
     {
         [Required]
         [StringLength(100)]
-        [Display(Name = "Nazwa wydarzenia")]
+        [Display(Name = "Event name")]
         public string Title { get; set; }
 
         [DataType(DataType.MultilineText)]
-        [Display(Name = "Opis")]
+        [Display(Name = "Description")]
         public string? Description { get; set; }
 
         [Required]
-        [Display(Name = "Początek wydarzenia")]
+        [Display(Name = "Start date")]
         public DateTime StartDateTime { get; set; } = DateTime.Now;
 
         [Required]
-        [Display(Name = "Koniec wydarzenia")]
+        [Display(Name = "End date")]
         public DateTime EndDateTime { get; set; } = DateTime.Now.AddHours(1);
 
         [StringLength(200)]
-        [Display(Name = "Lokalizacja")]
+        [Display(Name = "Location")]
         public string? Location { get; set; }
 
         [Range(1, 10000)]
-        [Display(Name = "Liczba uczestników")]
+        [Display(Name = "Number of participants")]
         public int? MaxParticipants { get; set; }
-        [Display(Name = "Kategoria")]
+        [Display(Name = "Category")]
         public int CategoryId { get; set; }
 
-        [Display(Name = "Zdjęcie wydarzenia")]
+        [Display(Name = "Event photo")]
         public IFormFile EventImage { get; set; }
 
         [BindNever]
         public List<SelectListItem> Categories { get; set; }
 
-        [Display(Name = "Szerokość geograficzna (Latitude)")]
+        [Display(Name = "(Latitude)")]
         public double? Latitude { get; set; }
 
-        [Display(Name = "Długość geograficzna (Longitude)")]
+        [Display(Name = "(Longitude)")]
         public double? Longitude { get; set; }
     }
 }

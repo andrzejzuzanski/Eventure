@@ -20,7 +20,7 @@
         <div class="description-card">
             <h3 class="card-title">
                 <i class="bi bi-file-text"></i>
-                Opis wydarzenia
+                Event description
             </h3>
             <p class="description-text">@Model.Event.Description</p>
         </div>
@@ -32,26 +32,26 @@
         <div class="details-card">
             <h3 class="card-title">
                 <i class="bi bi-info-circle"></i>
-                Informacje o wydarzeniu
+                Event information
             </h3>
             <div class="detail-item">
-                <span class="detail-label">Data rozpoczęcia</span>
+                <span class="detail-label">Start date</span>
                 <span class="detail-value">@Model.Event.StartDateTime.ToString("f")</span>
             </div>
             <div class="detail-item">
-                <span class="detail-label">Data zakończenia</span>
+                <span class="detail-label">End date</span>
                 <span class="detail-value">@Model.Event.EndDateTime.ToString("f")</span>
             </div>
             <div class="detail-item">
-                <span class="detail-label">Lokalizacja</span>
+                <span class="detail-label">Location</span>
                 <span class="detail-value">@Model.Event.Location</span>
             </div>
             <div class="detail-item">
-                <span class="detail-label">Maksymalna liczba uczestników</span>
+                <span class="detail-label">Maximum number of participants</span>
                 <span class="detail-value">@Model.Event.MaxParticipants</span>
             </div>
             <div class="detail-item">
-                <span class="detail-label">Kategoria</span>
+                <span class="detail-label">Category</span>
                 <span class="detail-value">@Model.Event.Category?.Name</span>
             </div>
         </div>
@@ -60,19 +60,19 @@
         <div class="details-card">
             <h3 class="card-title">
                 <i class="bi bi-person-badge"></i>
-                Organizator
+                Organizer
             </h3>
             <div class="detail-item">
-                <span class="detail-label">Nazwa użytkownika</span>
+                <span class="detail-label">Username</span>
                 <span class="detail-value">@Model.Event.Organizer?.UserName</span>
             </div>
             @if (User.Identity.IsAuthenticated && User.FindFirstValue(ClaimTypes.NameIdentifier) != Model.Event.OrganizerId)
             {
                 <div class="detail-item">
-                    <span class="detail-label">Kontakt</span>
+                    <span class="detail-label">Contact</span>
                     <span class="detail-value">
                         <a asp-controller="Messages" asp-action="StartConversation" asp-route-recipientId="@Model.Event.OrganizerId" class="btn btn-outline-primary btn-sm">
-                            <i class="bi bi-envelope me-1"></i>Napisz wiadomość
+                            <i class="bi bi-envelope me-1"></i>Write a message
                         </a>
                     </span>
                 </div>
@@ -86,7 +86,7 @@
         <div class="map-card">
             <h3 class="card-title">
                 <i class="bi bi-geo-alt"></i>
-                Lokalizacja na mapie
+                Location on the map
             </h3>
             <div class="map-container">
                 <div id="details-map"></div>
@@ -98,7 +98,7 @@
     <div class="participants-card">
         <h3 class="card-title">
             <i class="bi bi-people"></i>
-            Uczestnicy (@(Model.Event.Participants?.Count() ?? 0))
+            Participants (@(Model.Event.Participants?.Count() ?? 0))
         </h3>
         @if (Model.Event.Participants != null && Model.Event.Participants.Any())
         {
@@ -114,7 +114,7 @@
         }
         else
         {
-            <p class="text-muted"><em>Brak uczestników.</em></p>
+            <p class="text-muted"><em>No participants.</em></p>
         }
     </div>
 
@@ -129,14 +129,14 @@
         <div class="actions-card">
             <h3 class="card-title">
                 <i class="bi bi-gear"></i>
-                Akcje
+                Actions
             </h3>
 
             @if (!alreadyJoined && !isOrganizer && !isFull)
             {
                 <form asp-action="Join" asp-route-id="@Model.Event.Id" method="post" style="display: inline;">
                     <button type="submit" class="btn btn-success">
-                        <i class="bi bi-plus-circle me-2"></i>Dołącz do wydarzenia
+                        <i class="bi bi-plus-circle me-2"></i>Join event
                     </button>
                 </form>
             }
@@ -144,29 +144,29 @@
             {
                 <form asp-action="Leave" asp-route-id="@Model.Event.Id" method="post" style="display: inline;">
                     <button type="submit" class="btn btn-warning">
-                        <i class="bi bi-dash-circle me-2"></i>Opuść wydarzenie
+                        <i class="bi bi-dash-circle me-2"></i>Leave event
                     </button>
                 </form>
             }
             else if (isFull)
             {
                 <div class="alert alert-danger">
-                    <i class="bi bi-exclamation-triangle me-2"></i>Brak miejsc – wydarzenie pełne.
+                    <i class="bi bi-exclamation-triangle me-2"></i>No seats available – event is full.
                 </div>
             }
 
             @if (isOrganizer)
             {
                 <a asp-action="Edit" asp-route-id="@Model.Event.Id" class="btn btn-primary">
-                    <i class="bi bi-pencil me-2"></i>Edytuj
+                    <i class="bi bi-pencil me-2"></i>Edit
                 </a>
                 <a asp-action="Delete" asp-route-id="@Model.Event.Id" class="btn btn-danger">
-                    <i class="bi bi-trash me-2"></i>Usuń
+                    <i class="bi bi-trash me-2"></i>Delete
                 </a>
             }
 
             <a asp-action="Index" class="btn btn-secondary">
-                <i class="bi bi-arrow-left me-2"></i>Powrót do listy
+                <i class="bi bi-arrow-left me-2"></i>Back to list
             </a>
         </div>
     }
@@ -177,7 +177,7 @@
         <div class="recommendations-card">
             <h3 class="card-title">
                 <i class="bi bi-lightbulb"></i>
-                Może Cię również zainteresować
+                You may also be interested in...
             </h3>
             @foreach (var recEvent in Model.RecommendedEvents)
             {
@@ -198,7 +198,7 @@
         <div class="comments-section">
             <h3 class="card-title">
                 <i class="bi bi-chat-dots"></i>
-                Komentarze (@Model.RootComments.Sum(c => 1 + c.Replies.Count))
+                Comments (@Model.RootComments.Sum(c => 1 + c.Replies.Count))
             </h3>
 
             <div id="main-comment-form">
@@ -217,7 +217,7 @@
     {
         <div class="comments-section">
             <div class="alert alert-info">
-                <i class="bi bi-info-circle me-2"></i>Musisz być uczestnikiem wydarzenia, aby zobaczyć i dodawać komentarze.
+                <i class="bi bi-info-circle me-2"></i>You must be a participant in the event to view and add comments.
             </div>
         </div>
     }

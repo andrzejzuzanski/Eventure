@@ -61,7 +61,6 @@ namespace Eventure.Areas.Identity.Pages.Account.Manage
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
-            //[RegularExpression(@"^[a-zA-Z0-9_.-]*$", ErrorMessage = "Username cannot contain spaces")]
             [Display(Name = "Username")]
             public string UserName { get; set; }
 
@@ -140,7 +139,6 @@ namespace Eventure.Areas.Identity.Pages.Account.Manage
                 var setUserNameResult = await _userManager.SetUserNameAsync(user, Input.UserName);
                 if (!setUserNameResult.Succeeded)
                 {
-                    // Obsługa błędu, np. jeśli nowa nazwa jest już zajęta
                     StatusMessage = "Error: This username is already used";
                     return RedirectToPage();
                 }

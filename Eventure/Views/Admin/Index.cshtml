@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Panel Administracyjny";
+    ViewData["Title"] = "Admin Panel";
 }
 
 <link rel="stylesheet" href="~/css/admin/Index.css"/>
@@ -10,10 +10,10 @@
         <div class="text-center">
             <h1 class="hero-title display-4">
                 <i class="bi bi-shield-check hero-icon"></i>
-                Panel Administracyjny
+                Admin Panel
             </h1>
             <div class="accent-line"></div>
-            <p class="hero-subtitle">Kompleksowe zarządzanie platformą Eventure. Monitoruj użytkowników, moderuj wydarzenia i analizuj statystyki.</p>
+            <p class="hero-subtitle">Comprehensive management of the Eventure platform. Monitor users, moderate events, and analyze statistics.</p>
         </div>
     </div>
 </section>
@@ -22,7 +22,7 @@
     <!-- Welcome Message -->
     <div class="welcome-message">
         <p class="welcome-text">
-            Witaj w panelu zarządzania aplikacją Eventure. Stąd możesz efektywnie administrować całą platformą, zapewniając bezpieczne i przyjazne środowisko dla wszystkich użytkowników.
+            Welcome to the Eventure application management panel. From here, you can effectively administer the entire platform, ensuring a safe and user-friendly environment for all users.
         </p>
     </div>
 
@@ -34,13 +34,13 @@
                     <div class="card-icon">
                         <i class="bi bi-people"></i>
                     </div>
-                    <h5 class="card-title">Zarządzaj użytkownikami</h5>
+                    <h5 class="card-title">Manage users</h5>
                     <p class="card-text">
-                        Przeglądaj profile użytkowników, zarządzaj rolami i uprawnieniami, blokuj konta naruszające regulamin oraz monitoruj aktywność na platformie.
+                        Browse user profiles, manage roles and permissions, block accounts that violate the terms of service, and monitor activity on the platform.
                     </p>
                     <a asp-controller="Admin" asp-action="ManageUsers" class="btn btn-admin">
                         <i class="bi bi-arrow-right"></i>
-                        Przejdź do zarządzania
+                        Manage users
                     </a>
                 </div>
             </div>
@@ -52,13 +52,13 @@
                     <div class="card-icon">
                         <i class="bi bi-calendar-event"></i>
                     </div>
-                    <h5 class="card-title">Zarządzaj wydarzeniami</h5>
+                    <h5 class="card-title">Manage events</h5>
                     <p class="card-text">
-                        Moderuj treści wydarzeń, usuwaj nieodpowiednie materiały, weryfikuj lokalizacje oraz zapewniaj wysoką jakość publikowanych wydarzeń.
+                        Moderate event content, remove inappropriate material, verify locations, and ensure the high quality of published events.
                     </p>
                     <a asp-controller="Admin" asp-action="ManageEvents" class="btn btn-admin">
                         <i class="bi bi-arrow-right"></i>
-                        Przejdź do moderacji
+                        Manage events
                     </a>
                 </div>
             </div>
@@ -68,10 +68,8 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Smooth scroll behavior
         document.documentElement.style.scrollBehavior = 'smooth';
 
-        // Add interactive hover effects
         const cards = document.querySelectorAll('.admin-card');
         cards.forEach(card => {
             card.addEventListener('mouseenter', function() {
@@ -83,7 +81,6 @@
             });
         });
 
-        // Animate stats on scroll
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -50px 0px'

@@ -9,24 +9,24 @@
 <div class="myevents-container">
     <!-- Page Header -->
     <div class="page-header">
-        <h1 class="page-title">Moje Wydarzenia</h1>
+        <h1 class="page-title">My Events</h1>
         <div class="accent-line"></div>
-        <p class="page-subtitle">Przegląd wszystkich Twoich wydarzeń</p>
+        <p class="page-subtitle">Overview of all your events</p>
     </div>
 
     <!-- Statistics -->
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-number">@Model.OrganizedEvents.Count()</div>
-            <div class="stat-label">Zorganizowane</div>
+            <div class="stat-label">Organized</div>
         </div>
         <div class="stat-card">
             <div class="stat-number">@Model.JoinedEvents.Count()</div>
-            <div class="stat-label">Uczestniczę</div>
+            <div class="stat-label">I am participating</div>
         </div>
         <div class="stat-card">
             <div class="stat-number">@(Model.OrganizedEvents.Count() + Model.JoinedEvents.Count())</div>
-            <div class="stat-label">Łącznie</div>
+            <div class="stat-label">Total</div>
         </div>
     </div>
 
@@ -34,7 +34,7 @@
     <div class="events-section">
         <h2 class="section-title organizer-title">
             <i class="bi bi-star"></i>
-            Wydarzenia jako organizator
+            Events as an organizer
         </h2>
 
         @if (Model.OrganizedEvents.Any())
@@ -61,19 +61,19 @@
                         @{
                             var now = DateTime.Now;
                             var status = "upcoming";
-                            var statusText = "Nadchodzi";
+                            var statusText = "Upcoming";
                             var statusClass = "status-upcoming";
 
                             if (now >= ev.StartDateTime && now <= ev.EndDateTime)
                             {
                                 status = "ongoing";
-                                statusText = "Trwa";
+                                statusText = "Ongoing";
                                 statusClass = "status-ongoing";
                             }
                             else if (now > ev.EndDateTime)
                             {
                                 status = "finished";
-                                statusText = "Zakończone";
+                                statusText = "Finished";
                                 statusClass = "status-finished";
                             }
                         }
@@ -86,11 +86,11 @@
         {
             <div class="empty-state">
                 <i class="bi bi-calendar-plus"></i>
-                <h4>Nie zorganizowałeś jeszcze żadnego wydarzenia</h4>
-                <p>Czas na pierwszy krok! Stwórz wydarzenie i podziel się swoją pasją ze światem.</p>
+                <h4>You haven't organized any events yet.</h4>
+                <p>It's time to take the first step! Create an event and share your passion with the world.</p>
                 <a asp-action="Create" class="create-event-btn">
                     <i class="bi bi-plus-circle"></i>
-                    Stwórz pierwsze wydarzenie
+                    Create your first event
                 </a>
             </div>
         }
@@ -100,7 +100,7 @@
     <div class="events-section">
         <h2 class="section-title participant-title">
             <i class="bi bi-people"></i>
-            Wydarzenia, w których bierzesz udział
+            Events you participate in
         </h2>
 
         @if (Model.JoinedEvents.Any())
@@ -131,19 +131,19 @@
                         @{
                             var now = DateTime.Now;
                             var status = "upcoming";
-                            var statusText = "Nadchodzi";
+                            var statusText = "Upcomming";
                             var statusClass = "status-upcoming";
 
                             if (now >= ev.StartDateTime && now <= ev.EndDateTime)
                             {
                                 status = "ongoing";
-                                statusText = "Trwa";
+                                statusText = "Ongoing";
                                 statusClass = "status-ongoing";
                             }
                             else if (now > ev.EndDateTime)
                             {
                                 status = "finished";
-                                statusText = "Zakończone";
+                                statusText = "Finished";
                                 statusClass = "status-finished";
                             }
                         }
@@ -156,11 +156,11 @@
         {
             <div class="empty-state">
                 <i class="bi bi-calendar-check"></i>
-                <h4>Nie bierzesz udziału w żadnym wydarzeniu</h4>
-                <p>Odkryj fascynujące wydarzenia w swojej okolicy i dołącz do społeczności!</p>
+                <h4>You are not participating in any event</h4>
+                <p>Discover exciting events in your area and join the community!</p>
                 <a asp-action="Index" class="create-event-btn">
                     <i class="bi bi-search"></i>
-                    Przeglądaj wydarzenia
+                    Explore events
                 </a>
             </div>
         }

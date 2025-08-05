@@ -48,7 +48,7 @@ namespace Eventure.Controllers
         {
             if (string.IsNullOrWhiteSpace(content))
             {
-                TempData["Message"] = "Wiadomość nie może być pusta.";
+                TempData["Message"] = "The message cannot be empty.";
                 TempData["MessageType"] = "warning";
                 return RedirectToAction(nameof(Conversation), new { id = conversationId });
             }

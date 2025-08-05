@@ -1,14 +1,14 @@
 ﻿@page
 @model RegisterConfirmationModel
 @{
-    ViewData["Title"] = "Potwierdzenie rejestracji";
+    ViewData["Title"] = "Registration confirmation";
 }
 
 <link rel="stylesheet" href="~/css/Account/auth-styles.css" />
 
 <div class="confirmation-card">
     <div class="auth-header">
-        <h1 class="auth-title">Witamy w Eventure!</h1>
+        <h1 class="auth-title">Welcone in Eventure!</h1>
         <div class="accent-line"></div>
     </div>
 
@@ -17,10 +17,10 @@
             <i class="bi bi-envelope-heart display-1 text-success"></i>
         </div>
 
-        <h4 class="alert-heading text-center">Dziękujemy za rejestrację!</h4>
+        <h4 class="alert-heading text-center">Thank you for signing up!</h4>
 
         <p class="text-center mb-3">
-            Na Twój adres e-mail <strong>@Model.Email</strong> wysłaliśmy link aktywacyjny.
+            We have sent an activation link to your email address <strong>@Model.Email</strong>.
         </p>
 
         <hr class="my-4">
@@ -28,19 +28,19 @@
         <div class="text-center">
             <p class="mb-4">
                 <i class="bi bi-info-circle me-2"></i>
-                Sprawdź swoją skrzynkę odbiorczą (oraz folder spam!) i kliknij w link,
-                aby w pełni aktywować swoje konto i móc się zalogować.
+                Check your inbox (and spam folder!) and click on the link
+                to fully activate your account and log in.
             </p>
 
             <div class="d-flex flex-column gap-3">
                 <a asp-page="./Login" class="btn btn-primary">
                     <i class="bi bi-box-arrow-in-right me-2"></i>
-                    Przejdź do logowania
+                    Go to login page
                 </a>
 
                 <a asp-page="./ResendEmailConfirmation" class="btn btn-outline-primary">
                     <i class="bi bi-envelope-arrow-up me-2"></i>
-                    Wyślij ponownie e-mail
+                    Resend email
                 </a>
             </div>
         </div>
@@ -50,7 +50,7 @@
         <div class="text-center">
             <small class="text-muted">
                 <i class="bi bi-clock me-1"></i>
-                Link aktywacyjny jest ważny przez 24 godziny
+                The activation link is valid for 24 hours.
             </small>
         </div>
     </div>
@@ -58,14 +58,12 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Celebration animation
         const icon = document.querySelector('.bi-envelope-heart');
 
         setTimeout(() => {
             icon.style.animation = 'pulse 2s infinite';
         }, 1000);
 
-        // Enhanced button interactions
         const buttons = document.querySelectorAll('.btn');
         buttons.forEach(button => {
             button.addEventListener('mouseenter', function() {
@@ -77,7 +75,6 @@
             });
         });
 
-        // Auto-focus on primary action after delay
         setTimeout(() => {
             const primaryBtn = document.querySelector('.btn-primary');
             if (primaryBtn) {

@@ -2,13 +2,13 @@
 
 <link rel="stylesheet" href="~/css/messages/MessageBadge.css" />
 
-<a class="message-nav-link" asp-controller="Messages" asp-action="Index" title="Wiadomości">
+<a class="message-nav-link" asp-controller="Messages" asp-action="Index" title="Messages">
     <i class="bi bi-envelope message-icon"></i>
     @if (Model > 0)
     {
         <span class="message-badge" data-count="@Model">
             @Model
-            <span class="visually-hidden">nieprzeczytane wiadomości</span>
+            <span class="visually-hidden">unread messages</span>
         </span>
     }
 </a>

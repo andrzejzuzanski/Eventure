@@ -1,6 +1,6 @@
 ﻿@model Eventure.ViewModels.Admin.ManageUserRolesViewModel
 @{
-    ViewData["Title"] = $"Zarządzaj rolami dla {Model.UserName}";
+    ViewData["Title"] = $"Manage roles for {Model.UserName}";
 }
 
 <link rel="stylesheet" href="~/css/Admin/ManageRoles.css" />
@@ -11,14 +11,14 @@
         <div class="text-center">
             <h1 class="hero-title display-5">
                 <i class="bi bi-person-gear hero-icon"></i>
-                Zarządzaj rolami dla
+                Manage roles for
                 <span class="user-badge">
                     <i class="bi bi-person"></i>
                     @Model.UserName
                 </span>
             </h1>
             <div class="accent-line"></div>
-            <p class="hero-subtitle">Przypisz odpowiednie uprawnienia dla tego użytkownika</p>
+            <p class="hero-subtitle">Assign permissions for this user.</p>
         </div>
     </div>
 </section>
@@ -28,7 +28,7 @@
         <div class="roles-form-card">
             <div class="card-header">
                 <i class="bi bi-shield-check"></i>
-                Dostępne role systemowe
+                Available system roles
             </div>
             <div class="card-body">
                 <input type="hidden" asp-for="UserId" />
@@ -62,15 +62,15 @@
                                     <div class="role-description">
                                         @if (Model.Roles[i].RoleName == "Admin")
                                         {
-                                            @:Pełny dostęp do wszystkich funkcji systemu
+                                            @:Full access to all system features
                                         }
                                         else if (Model.Roles[i].RoleName == "Moderator")
                                         {
-                                            @:Moderacja treści i zarządzanie wydarzeniami
+                                            @:Content moderation and event management
                                         }
                                         else
                                         {
-                                            @:Standardowy użytkownik platformy
+                                            @:Standard platform user
                                         }
                                     </div>
                                 </div>
@@ -80,28 +80,28 @@
                             <div class="role-permissions">
                                 <div class="permissions-title">
                                     <i class="bi bi-key"></i>
-                                    Uprawnienia:
+                                    Privileges:
                                 </div>
                                 <ul class="permissions-list">
                                     @if (Model.Roles[i].RoleName == "Admin")
                                     {
-                                        <li>Zarządzanie wszystkimi użytkownikami</li>
-                                        <li>Usuwanie dowolnych wydarzeń</li>
-                                        <li>Dostęp do panelu administracyjnego</li>
-                                        <li>Zarządzanie rolami użytkowników</li>
+                                        <li>Manage all users</li>
+                                        <li>Remove any events</li>
+                                        <li>Access to the admin panel</li>
+                                        <li>User role management</li>
                                     }
                                     else if (Model.Roles[i].RoleName == "Moderator")
                                     {
-                                        <li>Moderacja treści wydarzeń</li>
-                                        <li>Usuwanie nieodpowiednich komentarzy</li>
-                                        <li>Blokowanie użytkowników</li>
+                                        <li>Event content moderation</li>
+                                        <li>Removing inappropriate comments</li>
+                                        <li>Blocking users</li>
                                     }
                                     else
                                     {
-                                        <li>Tworzenie wydarzeń</li>
-                                        <li>Uczestniczenie w wydarzeniach</li>
-                                        <li>Dodawanie komentarzy</li>
-                                        <li>Wysyłanie wiadomości</li>
+                                        <li>Creating events</li>
+                                        <li>Participation in events</li>
+                                        <li>Adding comments</li>
+                                        <li>Sending messages</li>
                                     }
                                 </ul>
                             </div>
@@ -112,11 +112,11 @@
                 <div class="form-actions">
                     <button type="submit" class="btn btn-save">
                         <i class="bi bi-check-circle"></i>
-                        Zapisz zmiany
+                        Save changes
                     </button>
                     <a asp-action="ManageUsers" class="btn btn-cancel">
                         <i class="bi bi-x-circle"></i>
-                        Anuluj
+                        Cancel
                     </a>
                 </div>
             </div>
@@ -126,14 +126,11 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Smooth scroll behavior
         document.documentElement.style.scrollBehavior = 'smooth';
 
-        // Enhanced role selection interactions
         const roleItems = document.querySelectorAll('.role-item');
         const checkboxes = document.querySelectorAll('.role-checkbox');
 
-        // Update role item appearance based on checkbox state
         function updateRoleItemAppearance(roleItem, isChecked) {
             if (isChecked) {
                 roleItem.classList.add('selected');
@@ -142,7 +139,6 @@
             }
         }
 
-        // Initialize appearance based on current state
         checkboxes.forEach((checkbox, index) => {
             const roleItem = roleItems[index];
             updateRoleItemAppearance(roleItem, checkbox.checked);
@@ -150,7 +146,6 @@
             checkbox.addEventListener('change', function() {
                 updateRoleItemAppearance(roleItem, this.checked);
 
-                // Add animation effect
                 roleItem.style.animation = 'roleToggle 0.3s ease';
                 setTimeout(() => {
                     roleItem.style.animation = '';
@@ -158,7 +153,6 @@
             });
         });
 
-        // Enhanced hover effects
         roleItems.forEach(item => {
             item.addEventListener('mouseenter', function() {
                 if (!this.classList.contains('selected')) {
@@ -173,7 +167,6 @@
             });
         });
 
-        // Form validation
         const form = document.querySelector('form');
         form.addEventListener('submit', function(e) {
             const checkedRoles = document.querySelectorAll('.role-checkbox:checked');
@@ -181,29 +174,27 @@
 
             if (checkedRoles.length === 0) {
                 e.preventDefault();
-                alert('⚠️ Ostrzeżenie!\n\nMusisz przypisać przynajmniej jedną rolę użytkownikowi.');
+                alert('⚠️ Warning!\n\nYou must assign at least one role to the user.');
                 return;
             }
 
-            // Check if admin role is being assigned
             const adminRole = Array.from(checkedRoles).find(cb =>
                 cb.closest('.role-item').classList.contains('admin')
             );
 
             if (adminRole) {
-                if (!confirm(`🔐 Przyznanie roli Administrator\n\nCzy na pewno chcesz nadać użytkownikowi "${userName}" uprawnienia administratora?\n\nUżytkownik będzie miał pełny dostęp do systemu!`)) {
+                if (!confirm(`🔐 Granting the Administrator role\n\nAre you sure you want to assign the user "${userName}" administrator privileges?\n\nThe user will have full access to the system!`)) {
                     e.preventDefault();
                     return;
                 }
             }
 
-            // Show confirmation for changes
             const roleNames = Array.from(checkedRoles).map(cb => {
                 const roleItem = cb.closest('.role-item');
                 return roleItem.querySelector('.role-name').textContent;
             });
 
-            if (!confirm(`✅ Potwierdzenie zmian\n\nPrzypisane role dla "${userName}":\n${roleNames.join(', ')}\n\nCzy chcesz zapisać te zmiany?`)) {
+            if (!confirm(`✅ Change confirmation\n\nAssigned roles for "${userName}":\n${roleNames.join(', ')}\n\nDo you want to save these changes?`)) {
                 e.preventDefault();
             }
         });

@@ -345,7 +345,6 @@ body {
     }
 }
 
-/* Loading animation for new messages */
 .message-loading {
     opacity: 0.6;
     animation: typing 1.5s infinite;

@@ -67,7 +67,6 @@
         box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
     }
 
-/* Alert Styles */
 .alert {
     border: none;
     border-radius: 12px;
@@ -124,7 +123,6 @@
         transform: scale(1.1);
     }
 
-/* Footer Styles */
 .footer {
     background: rgba(248, 249, 250, 0.95);
     backdrop-filter: blur(20px);
@@ -146,7 +144,6 @@
             text-decoration: none;
         }
 
-/* Main Content */
 main {
     min-height: calc(100vh - 160px);
     padding-bottom: 2rem;
@@ -156,7 +153,6 @@ main {
     margin-bottom: 2rem;
 }
 
-/* Responsive adjustments */
 @media (max-width: 991.98px) {
     .navbar-nav {
         background: rgba(255, 255, 255, 0.98);
@@ -173,13 +169,11 @@ main {
     }
 }
 
-/* Loading states */
 .nav-link.disabled {
     opacity: 0.6;
     pointer-events: none;
 }
 
-/* Enhanced notification styles */
 .nav-item .position-relative {
     display: inline-flex;
     align-items: center;

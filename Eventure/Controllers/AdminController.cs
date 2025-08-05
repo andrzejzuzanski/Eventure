@@ -54,14 +54,14 @@ namespace Eventure.Controllers
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
             {
-                TempData["Message"] = "Użytkownik nie znaleziony.";
+                TempData["Message"] = "User not found.";
                 TempData["MessageType"] = "danger";
                 return NotFound();
             }
 
             if (user.Id == _userManager.GetUserId(User))
             {
-                TempData["Message"] = "Nie możesz zablokować własnego konta.";
+                TempData["Message"] = "You cannot lock your own account.";
                 TempData["MessageType"] = "danger";
                 return RedirectToAction(nameof(ManageUsers));
             }
@@ -70,12 +70,12 @@ namespace Eventure.Controllers
 
             if (result.Succeeded)
             {
-                TempData["Message"] = $"Użytkownik {user.UserName} został zablokowany.";
+                TempData["Message"] = $"User {user.UserName} has been blocked.";
                 TempData["MessageType"] = "success";
             }
             else
             {
-                TempData["Message"] = "Wystąpił błąd podczas blokowania użytkownika.";
+                TempData["Message"] = "An error occurred while blocking the user.";
                 TempData["MessageType"] = "danger";
             }
 
@@ -89,7 +89,7 @@ namespace Eventure.Controllers
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
             {
-                TempData["Message"] = "Użytkownik nie znaleziony.";
+                TempData["Message"] = "User not found.";
                 TempData["MessageType"] = "danger";
                 return NotFound();
             }
@@ -98,12 +98,12 @@ namespace Eventure.Controllers
 
             if (result.Succeeded)
             {
-                TempData["Message"] = $"Użytkownik {user.UserName} został odblokowany.";
+                TempData["Message"] = $"User {user.UserName} has been unblocked.";
                 TempData["MessageType"] = "success";
             }
             else
             {
-                TempData["Message"] = "Wystąpił błąd podczas odblokowywania użytkownika.";
+                TempData["Message"] = "An error occurred while unblocking the user.";
                 TempData["MessageType"] = "danger";
             }
 
@@ -163,7 +163,7 @@ namespace Eventure.Controllers
                 }
             }
 
-            TempData["Message"] = $"Role dla użytkownika {user.UserName} zostały zaktualizowane.";
+            TempData["Message"] = $"The roles for user {user.UserName} have been updated.";
             TempData["MessageType"] = "success";
 
             return RedirectToAction(nameof(ManageUsers));
@@ -187,12 +187,12 @@ namespace Eventure.Controllers
 
             if (success)
             {
-                TempData["Message"] = "Wydarzenie zostało pomyślnie usunięte.";
+                TempData["Message"] = "The event has been successfully deleted.";
                 TempData["MessageType"] = "success";
             }
             else
             {
-                TempData["Message"] = "Nie udało się usunąć wydarzenia (mogło już nie istnieć).";
+                TempData["Message"] = "The event could not be deleted (it may no longer exist).";
                 TempData["MessageType"] = "danger";
             }
 

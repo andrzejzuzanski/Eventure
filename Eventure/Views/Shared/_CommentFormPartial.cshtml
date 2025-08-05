@@ -10,11 +10,11 @@
         <i class="bi bi-chat-dots"></i>
         @if (parentCommentId.HasValue)
         {
-            <span>Odpowiedz na komentarz</span>
+            <span>Reply to comment</span>
         }
         else
         {
-            <span>Dodaj komentarz</span>
+            <span>Add a comment</span>
         }
     </div>
 
@@ -27,7 +27,7 @@
             <textarea name="Content"
                       class="form-control comment-textarea"
                       rows="4"
-                      placeholder="@(parentCommentId.HasValue ? "Napisz odpowiedź..." : "Podziel się swoimi przemyśleniami o tym wydarzeniu...")"
+                      placeholder="@(parentCommentId.HasValue ? "Write a reply..." : "Share your thoughts about this event...")"
                       required
                       maxlength="1000"
                       oninput="updateCharacterCounter(this)"></textarea>
@@ -38,12 +38,12 @@
             @if (parentCommentId.HasValue)
             {
                 <button type="button" class="btn btn-cancel-comment" onclick="hideReplyForm(@parentCommentId)">
-                    <i class="bi bi-x-circle me-1"></i>Anuluj
+                    <i class="bi bi-x-circle me-1"></i>Cancel
                 </button>
             }
             <button type="submit" class="btn btn-submit-comment">
                 <i class="bi bi-send me-1"></i>
-                @(parentCommentId.HasValue ? "Odpowiedz" : "Opublikuj")
+                @(parentCommentId.HasValue ? "Reply" : "Comment")
             </button>
         </div>
     </form>
@@ -57,10 +57,8 @@
 
         counter.textContent = `${current} / ${max}`;
 
-        // Remove all classes
         counter.classList.remove('warning', 'danger');
 
-        // Add appropriate class based on character count
         if (current > max * 0.9) {
             counter.classList.add('danger');
         } else if (current > max * 0.7) {
@@ -68,7 +66,6 @@
         }
     }
 
-    // Initialize character counter on page load
     document.addEventListener('DOMContentLoaded', function() {
         const textareas = document.querySelectorAll('.comment-textarea');
         textareas.forEach(textarea => {

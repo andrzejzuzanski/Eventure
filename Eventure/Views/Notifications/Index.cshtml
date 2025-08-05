@@ -1,6 +1,6 @@
 ﻿@model List<Eventure.Models.Notification>
 @{
-    ViewData["Title"] = "Powiadomienia";
+    ViewData["Title"] = "Notifications";
 }
 
 <link rel="stylesheet" href="~/css/Notifications/Index.css" />
@@ -9,9 +9,9 @@
 <section class="hero-section">
     <div class="container">
         <div class="text-center">
-            <h1 class="hero-title display-4">Powiadomienia</h1>
+            <h1 class="hero-title display-4">Notifications</h1>
             <div class="accent-line"></div>
-            <p class="hero-subtitle">Bądź na bieżąco z najważniejszymi informacjami</p>
+            <p class="hero-subtitle">Stay up to date with the most important information</p>
         </div>
     </div>
 </section>
@@ -23,8 +23,8 @@
             <div class="empty-state-icon">
                 <i class="bi bi-bell-slash"></i>
             </div>
-            <h3>Brak powiadomień</h3>
-            <p>Gdy pojawią się nowe powiadomienia, znajdziesz je tutaj. Sprawdzaj regularnie, aby nie przegapić ważnych informacji o wydarzeniach!</p>
+            <h3>No notifications</h3>
+            <p>When new notifications appear, you will find them here. Check regularly so you don't miss out on important event information!</p>
         </div>
     }
     else
@@ -53,7 +53,7 @@
                         <div class="notification-actions">
                             <form asp-action="MarkAsRead" asp-route-id="@n.Id" method="post" class="d-inline">
                                 <button class="btn btn-mark-read">
-                                    <i class="bi bi-check me-1"></i>Oznacz jako przeczytane
+                                    <i class="bi bi-check me-1"></i>Mark as read
                                 </button>
                             </form>
                         </div>
@@ -66,10 +66,8 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Smooth scroll behavior
         document.documentElement.style.scrollBehavior = 'smooth';
 
-        // Enhanced interactions for mark as read buttons
         const markButtons = document.querySelectorAll('.btn-mark-read');
         markButtons.forEach(button => {
             button.addEventListener('click', function(e) {

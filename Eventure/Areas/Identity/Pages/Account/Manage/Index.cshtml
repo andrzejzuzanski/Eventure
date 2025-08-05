@@ -1,7 +1,7 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Profil"; // Zmieniłem na polski
+    ViewData["Title"] = "Profile";
     ViewData["ActivePage"] = ManageNavPages.Index;
 }
 
@@ -30,7 +30,7 @@
                 <span asp-validation-for="Input.ProfilePicture" class="text-danger"></span>
             </div>
 
-            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Zapisz</button>
+            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
         </form>
     </div>
 
@@ -39,11 +39,11 @@
             <label asp-for="CurrentProfilePictureUrl" class="form-label mb-2"></label>
             @if (!string.IsNullOrEmpty(Model.CurrentProfilePictureUrl))
             {
-                <img src="@Model.CurrentProfilePictureUrl" alt="Zdjęcie profilowe" class="img-fluid rounded-circle" style="width: 250px; height: 250px; object-fit: cover;" />
+                <img src="@Model.CurrentProfilePictureUrl" alt="Profile photo" class="img-fluid rounded-circle" style="width: 250px; height: 250px; object-fit: cover;" />
             }
             else
             {
-                <img src="~/uploads/avatars/default-avatar.png" alt="Domyślny awatar" class="img-fluid rounded-circle" style="width: 250px; height: 250px; object-fit: cover;" />
+                <img src="~/uploads/avatars/default-avatar.png" alt="Default avatar" class="img-fluid rounded-circle" style="width: 250px; height: 250px; object-fit: cover;" />
             }
         </div>
     </div>

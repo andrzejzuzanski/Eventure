@@ -3,7 +3,7 @@
 @inject UserManager<ApplicationUser> UserManager
 @model IEnumerable<Eventure.ViewModels.Admin.UserViewModel>
 @{
-    ViewData["Title"] = "Zarządzaj użytkownikami";
+    ViewData["Title"] = "Manage users";
 }
 
 <link rel="stylesheet" href="~/css/Admin/ManageUsers.css" />
@@ -14,10 +14,10 @@
         <div class="text-center">
             <h1 class="hero-title display-4">
                 <i class="bi bi-people hero-icon"></i>
-                Zarządzaj Użytkownikami
+                Manage Users
             </h1>
             <div class="accent-line"></div>
-            <p class="hero-subtitle">Administruj kontami użytkowników, rolami i uprawnieniami</p>
+            <p class="hero-subtitle">Manage user accounts, roles, and permissions</p>
         </div>
     </div>
 </section>
@@ -27,19 +27,19 @@
     <div class="users-stats">
         <div class="stat-card total">
             <div class="stat-number">@Model.Count()</div>
-            <div class="stat-label">Wszyscy użytkownicy</div>
+            <div class="stat-label">All users</div>
         </div>
         <div class="stat-card active">
             <div class="stat-number">@Model.Count(u => !u.IsLockedOut)</div>
-            <div class="stat-label">Aktywni użytkownicy</div>
+            <div class="stat-label">Active users</div>
         </div>
         <div class="stat-card locked">
             <div class="stat-number">@Model.Count(u => u.IsLockedOut)</div>
-            <div class="stat-label">Zablokowani</div>
+            <div class="stat-label">Blocked</div>
         </div>
         <div class="stat-card admins">
             <div class="stat-number">@Model.Count(u => u.Roles.Contains("Admin"))</div>
-            <div class="stat-label">Administratorzy</div>
+            <div class="stat-label">Admins</div>
         </div>
     </div>
 
@@ -48,10 +48,10 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th>Użytkownik</th>
-                    <th>Role</th>
+                    <th>User</th>
+                    <th>Roles</th>
                     <th>Status</th>
-                    <th>Akcje</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -88,7 +88,7 @@
                                 }
                                 else
                                 {
-                                    <span class="role-badge">Użytkownik</span>
+                                    <span class="role-badge">User</span>
                                 }
                             </div>
                         </td>
@@ -96,20 +96,20 @@
                             @if (user.IsLockedOut)
                             {
                                 <span class="locked-indicator">
-                                    <i class="bi bi-lock me-1"></i>Zablokowany
+                                    <i class="bi bi-lock me-1"></i>Blocked
                                 </span>
                             }
                             else
                             {
                                 <span class="text-success">
-                                    <i class="bi bi-check-circle me-1"></i>Aktywny
+                                    <i class="bi bi-check-circle me-1"></i>Active
                                 </span>
                             }
                         </td>
                         <td>
                             <div class="action-buttons">
                                 <a asp-action="ManageRoles" asp-route-id="@user.Id" class="btn btn-action btn-manage">
-                                    <i class="bi bi-gear me-1"></i>Role
+                                    <i class="bi bi-gear me-1"></i>Roles
                                 </a>
 
                                 @if (user.Id != UserManager.GetUserId(User))
@@ -117,17 +117,17 @@
                                     @if (user.IsLockedOut)
                                     {
                                         <form asp-action="UnlockUser" asp-route-id="@user.Id" method="post" class="d-inline">
-                                            <button type="submit" class="btn btn-action btn-unlock" title="Odblokuj użytkownika">
-                                                <i class="bi bi-unlock me-1"></i>Odblokuj
+                                            <button type="submit" class="btn btn-action btn-unlock" title="Unblock user">
+                                                <i class="bi bi-unlock me-1"></i>Unblock
                                             </button>
                                         </form>
                                     }
                                     else
                                     {
                                         <form asp-action="LockUser" asp-route-id="@user.Id" method="post" class="d-inline"
-                                              onsubmit="return confirm('Czy na pewno chcesz zablokować użytkownika @user.UserName?');">
-                                            <button type="submit" class="btn btn-action btn-lock" title="Zablokuj użytkownika">
-                                                <i class="bi bi-lock me-1"></i>Zablokuj
+                                              onsubmit="return confirm('Are you sure you want to block user: @user.UserName?');">
+                                            <button type="submit" class="btn btn-action btn-lock" title="Block user">
+                                                <i class="bi bi-lock me-1"></i>Block
                                             </button>
                                         </form>
                                     }
@@ -144,17 +144,15 @@
     <div class="text-center">
         <a asp-action="Index" class="back-button">
             <i class="bi bi-arrow-left"></i>
-            Powrót do panelu
+            Return to panel
         </a>
     </div>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Smooth scroll behavior
         document.documentElement.style.scrollBehavior = 'smooth';
 
-        // Enhanced table row interactions
         const tableRows = document.querySelectorAll('tbody tr');
         tableRows.forEach(row => {
             row.addEventListener('mouseenter', function() {
@@ -168,7 +166,6 @@
             });
         });
 
-        // Animate statistics on page load
         const statNumbers = document.querySelectorAll('.stat-number');
         statNumbers.forEach(stat => {
             const finalValue = parseInt(stat.textContent);

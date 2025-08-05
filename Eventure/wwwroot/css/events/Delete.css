@@ -42,6 +42,52 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* DODANE: Główny kontener - podobnie jak w Create.css */
+.delete-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 0;
+}
+
+/* DODANE: Style dla warning-card - podobnie jak form-card */
+.warning-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 16px;
+    padding: 3rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.8s ease-out;
+}
+
+/* DODANE: Style dla tytułu */
+.delete-title {
+    font-weight: 300;
+    letter-spacing: -0.5px;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    font-size: 2.5rem;
+    text-align: center;
+}
+
+/* DODANE: Accent line */
+.accent-line {
+    width: 60px;
+    height: 3px;
+    background: #e74c3c;
+    margin: 0 auto 1rem;
+    border-radius: 2px;
+}
+
+/* DODANE: Warning message */
+.warning-message {
+    color: #7f8c8d;
+    font-weight: 300;
+    font-size: 1.1rem;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
 .event-details {
     background: rgba(248, 249, 250, 0.8);
     border: 1px solid rgba(0, 0, 0, 0.05);
@@ -111,6 +157,13 @@ body {
     overflow: hidden;
 }
 
+    .btn-danger:disabled {
+        background: #bdc3c7;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
     .btn-danger::before {
         content: '';
         position: absolute;
@@ -122,11 +175,11 @@ body {
         transition: left 0.5s;
     }
 
-    .btn-danger:hover::before {
+    .btn-danger:hover:not(:disabled)::before {
         left: 100%;
     }
 
-    .btn-danger:hover {
+    .btn-danger:hover:not(:disabled) {
         background: #c0392b;
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
@@ -209,6 +262,7 @@ body {
 
     .warning-card {
         padding: 2rem 1.5rem;
+        margin: 1rem;
     }
 
     .delete-title {

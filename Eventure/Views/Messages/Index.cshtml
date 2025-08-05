@@ -3,7 +3,7 @@
 @model List<Conversation>
 
 @{
-    ViewData["Title"] = "Wiadomości";
+    ViewData["Title"] = "Messages";
     var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 }
 
@@ -13,9 +13,9 @@
 <section class="hero-section">
     <div class="container">
         <div class="text-center">
-            <h1 class="hero-title display-4">Wiadomości</h1>
+            <h1 class="hero-title display-4">Messages</h1>
             <div class="accent-line"></div>
-            <p class="hero-subtitle">Zarządzaj swoimi rozmowami i bądź w kontakcie</p>
+            <p class="hero-subtitle">Manage your conversations and stay in touch</p>
         </div>
     </div>
 </section>
@@ -29,7 +29,7 @@
                     <i class="bi bi-chat-dots"></i>
                 </div>
                 <h3>Brak wiadomości</h3>
-                <p>Nie masz jeszcze żadnych rozmów. Rozpocznij konwersację z innymi uczestnikami wydarzeń!</p>
+                <p>You don't have any conversations yet. Start chatting with other event participants!</p>
             </div>
         }
         else
@@ -37,7 +37,7 @@
             @foreach (var conversation in Model)
             {
                 var otherParticipant = conversation.Participants.FirstOrDefault(p => p.UserId != currentUserId)?.User;
-                var conversationTitle = otherParticipant != null ? otherParticipant.UserName : "Usunięty użytkownik";
+                var conversationTitle = otherParticipant != null ? otherParticipant.UserName : "Deleted user";
                 bool hasUnread = conversation.Messages.Any(m => m.SenderId != currentUserId && !m.IsRead);
                 var unreadClass = hasUnread ? "unread" : "";
                 var avatarLetter = conversationTitle.Substring(0, 1).ToUpper();
@@ -50,10 +50,10 @@
                         <div class="conversation-meta">
                             <div class="conversation-info">
                                 <div class="conversation-title">
-                                    Rozmowa z: @conversationTitle
+                                    Conversation with: @conversationTitle
                                     @if (hasUnread)
                                     {
-                                        <span class="unread-badge">NOWE</span>
+                                        <span class="unread-badge">NEW</span>
                                     }
                                 </div>
                                 @if (conversation.Messages.Any())
@@ -73,7 +73,7 @@
                         }
                         else
                         {
-                            <p class="conversation-preview empty">Brak wiadomości w tej konwersacji.</p>
+                            <p class="conversation-preview empty">No messages in this conversation.</p>
                         }
                     </div>
                 </a>
@@ -84,10 +84,8 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Smooth scroll behavior
         document.documentElement.style.scrollBehavior = 'smooth';
 
-        // Enhanced hover effects for conversation cards
         const conversationCards = document.querySelectorAll('.conversation-card');
         conversationCards.forEach(card => {
             card.addEventListener('mouseenter', function() {

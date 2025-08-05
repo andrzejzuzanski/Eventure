@@ -4,7 +4,7 @@
 
 @{
     var otherParticipant = Model.Participants.FirstOrDefault(p => p.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))?.User;
-    ViewData["Title"] = otherParticipant != null ? $"Rozmowa z {otherParticipant.UserName}" : "Konwersacja";
+    ViewData["Title"] = otherParticipant != null ? $"Conversation with {otherParticipant.UserName}" : "Conversation";
 }
 
 <link rel="stylesheet" href="~/css/messages/Converstaion.css"/>
@@ -17,7 +17,7 @@
             <div class="accent-line"></div>
             <a asp-action="Index" class="back-button">
                 <i class="bi bi-arrow-left"></i>
-                Wróć do listy rozmów
+                Return
             </a>
         </div>
     </section>
@@ -29,7 +29,7 @@
             {
                 <div class="empty-chat">
                     <i class="bi bi-chat-square-text"></i>
-                    <p>Rozpocznij konwersację!</p>
+                    <p>Start a conversation!</p>
                 </div>
             }
             else
@@ -75,10 +75,10 @@
                 <input type="hidden" name="conversationId" value="@Model.Id" />
                 <div class="input-group">
                     <textarea id="messageInput" name="content" class="form-control message-input"
-                              placeholder="Napisz wiadomość..." rows="3"></textarea>
+                              placeholder="Write a message..." rows="3"></textarea>
                     <button type="submit" class="btn send-button ms-3">
                         <i class="bi bi-send"></i>
-                        Wyślij
+                        Send
                     </button>
                 </div>
             </form>
@@ -94,7 +94,6 @@
             const currentUserName = "@User.Identity.Name";
             const chatContainer = document.getElementById("chatContainer");
 
-            // Scroll to bottom on load
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
             const connection = new signalR.HubConnectionBuilder()
@@ -142,11 +141,11 @@
                         document.getElementById("messageInput").style.height = 'auto';
                     } else {
                         console.error("Failed to send message.");
-                        alert('Wystąpił błąd podczas wysyłania wiadomości.');
+                        alert('');
                     }
                 }).catch(error => {
                     console.error("Error sending message:", error);
-                    alert('Wystąpił błąd podczas wysyłania wiadomości.');
+                    alert('An error occurred while sending the message.');
                 }).finally(() => {
                     // Reset button state
                     sendButton.innerHTML = originalText;

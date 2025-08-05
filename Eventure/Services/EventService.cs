@@ -96,7 +96,7 @@ namespace Eventure.Services
             categories.Insert(0, new SelectListItem
             {
                 Value = "",
-                Text = "-- Wszystkie kategorie --"
+                Text = "-- All categories --"
             });
 
             return categories;
@@ -183,15 +183,15 @@ namespace Eventure.Services
                 .FirstOrDefaultAsync(e => e.Id == eventId);
 
             if (ev == null)
-                return (false, "Wydarzenie nie zostało znalezione.");
+                return (false, "The event was not found.");
 
             bool alreadyJoined = ev.Participants.Any(p => p.UserId == userId);
 
             if (alreadyJoined)
-                return (false, "Już bierzesz udział w tym wydarzeniu.");
+                return (false, "You are already participating in this event.");
 
             if (ev.MaxParticipants.HasValue && ev.Participants.Count >= ev.MaxParticipants)
-                return (false, "Brak miejsc – wydarzenie jest pełne.");
+                return (false, "No places available – the event is full.");
 
             var participant = new EventParticipant
             {
@@ -202,7 +202,7 @@ namespace Eventure.Services
             _context.EventParticipants.Add(participant);
             await _context.SaveChangesAsync();
 
-            return (true, "Pomyślnie dołączono do wydarzenia.");
+            return (true, "You have successfully joined the event.");
         }
 
         public async Task<(bool success, string message)> LeaveEventAsync(int eventId, string userId)
@@ -211,12 +211,12 @@ namespace Eventure.Services
                 .FirstOrDefaultAsync(p => p.EventId == eventId && p.UserId == userId);
 
             if (participant == null)
-                return (false, "Nie jesteś uczestnikiem tego wydarzenia.");
+                return (false, "You are not a participant in this event.");
 
             _context.EventParticipants.Remove(participant);
             await _context.SaveChangesAsync();
 
-            return (true, "Pomyślnie opuściłeś wydarzenie.");
+            return (true, "You have successfully left the event.");
         }
 
         public async Task<bool> UpdateEventAsync(int id, EventCreateViewModel vm, string userId, string imageUrl)
@@ -232,16 +232,16 @@ namespace Eventure.Services
             var notifications = new List<string>();
 
             if (ev.Title != vm.Title)
-                notifications.Add($"Tytuł wydarzenia został zmieniony na: {vm.Title}");
+                notifications.Add($"The title of the event has been changed to: {vm.Title}");
 
             if (ev.StartDateTime != vm.StartDateTime)
-                notifications.Add($"Nowy termin rozpoczęcia: {vm.StartDateTime:dd.MM.yyyy HH:mm}");
+                notifications.Add($"New start date: {vm.StartDateTime:dd.MM.yyyy HH:mm}");
 
             if (ev.EndDateTime != vm.EndDateTime)
-                notifications.Add($"Nowy termin zakończenia: {vm.EndDateTime:dd.MM.yyyy HH:mm}");
+                notifications.Add($"New end date: {vm.EndDateTime:dd.MM.yyyy HH:mm}");
 
             if (ev.Location != vm.Location)
-                notifications.Add($"Lokalizacja wydarzenia została zmieniona na: {vm.Location}");
+                notifications.Add($"The location of the event has been changed to: {vm.Location}");
 
             ev.Title = vm.Title;
             ev.Description = vm.Description;

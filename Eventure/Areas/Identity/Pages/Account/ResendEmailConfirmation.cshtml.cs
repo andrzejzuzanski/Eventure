@@ -80,9 +80,9 @@ namespace Eventure.Areas.Identity.Pages.Account
                 protocol: Request.Scheme);
             await _emailService.SendEmailAsync(
         Input.Email,
-        "Potwierdź swój adres e-mail w Eventure",
-        $"Dziękujemy za rejestrację w naszym serwisie! Aby dokończyć proces, " +
-        $"proszę potwierdzić swój adres e-mail, klikając w poniższy link: <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>kliknij tutaj</a>.");
+        "Confirm your email address in Eventure",
+        $"Thank you for registering on our website! To complete the process, " +
+        $"please confirm your email address by clicking on the link below: <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>click here</a>.");
 
             ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
             return Page();

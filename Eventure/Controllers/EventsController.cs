@@ -86,7 +86,7 @@ namespace Eventure.Controllers
 
                 await _eventService.CreateEventAsync(vm, user.Id, imageUrl);
 
-                TempData["Message"] = "Wydarzenie zostało utworzone.";
+                TempData["Message"] = "The event has been created.";
                 TempData["MessageType"] = "success";
                 return RedirectToAction(nameof(Index));
             }
@@ -190,7 +190,7 @@ namespace Eventure.Controllers
             if(!isSuccess)
                 return NotFound();
 
-            TempData["Message"] = "Wydarzenie zostało zaktualizowane.";
+            TempData["Message"] = "The event has been updated.";
             TempData["MessageType"] = "success";
             return RedirectToAction(nameof(Index));
         }
@@ -222,7 +222,7 @@ namespace Eventure.Controllers
             if(!isSuccess)
                 return NotFound();
 
-            TempData["Message"] = "Wydarzenie zostało usunięte.";
+            TempData["Message"] = "The event has been deleted.";
             TempData["MessageType"] = "success";
             return RedirectToAction(nameof(Index));
         }
@@ -259,12 +259,12 @@ namespace Eventure.Controllers
 
             if (isSuccess)
             {
-                TempData["Message"] = "Pomyślnie opuściłeś wydarzenie.";
+                TempData["Message"] = "You have successfully left the event.";
                 TempData["MessageType"] = "success";
             }
             else
             {
-                TempData["Message"] = "Nie jesteś uczestnikiem tego wydarzenia.";
+                TempData["Message"] = "You are not participating in this event.";
                 TempData["MessageType"] = "warning";
             }
 
