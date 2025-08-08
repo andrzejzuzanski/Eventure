@@ -61,7 +61,7 @@ namespace Eventure.Tests
 
             var result = await eventService.LeaveEventAsync(eventId, participantId);
             Assert.True(result.success);
-            Assert.Equal("Pomyślnie opuściłeś wydarzenie.", result.message);
+            Assert.Equal("You have successfully left the event.", result.message);
         }
 
         [Fact]
@@ -90,7 +90,7 @@ namespace Eventure.Tests
             var result = await eventService.LeaveEventAsync(eventId, participantId);
 
             Assert.False(result.success);
-            Assert.Equal("Nie jesteś uczestnikiem tego wydarzenia.", result.message);
+            Assert.Equal("You are not a participant in this event.", result.message);
         }
 
         [Fact]
